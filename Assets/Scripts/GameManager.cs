@@ -21,6 +21,7 @@ namespace Scripts
         public static int AnswerWordNumber;
         public static int CorrectAnswers;
         public static bool LastAnswerCorrect;
+        public static bool Answered;
         public static bool OptionsShown;
 
         //TODO: to set
@@ -39,6 +40,7 @@ namespace Scripts
             CorrectAnswers = 0;
             CorrectAnswer = "";
             LastAnswerCorrect = true;
+            Answered = false;
             OptionsShown = false;
         }
 

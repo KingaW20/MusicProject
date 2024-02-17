@@ -77,6 +77,7 @@ namespace Scripts
                 background.color = correct ? new Color(0f, 1f, 0f) : new Color(1f, 0f, 0.524f);
                 answer.image.color = correct ? new Color(0f, 1f, 0f) : new Color(1f, 0f, 0f);
                 GameManager.LastAnswerCorrect = correct;
+                GameManager.Answered = true;
             }
             if (!resultShown)
             {
@@ -84,6 +85,7 @@ namespace Scripts
                 answer.text = "";
                 background.color = new Color(1f, 1f, 1f);
                 answer.image.color = new Color(1f, 1f, 1f);
+                GameManager.Answered = false;
                 if (GameManager.LastAnswerCorrect)
                     GameManager.CurrentGameContext = GameContext.MainContext;
                 else

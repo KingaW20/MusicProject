@@ -122,20 +122,25 @@ namespace Scripts
             if (helpShown.Any(item => item == true))
             {
                 for (int i = 0; i < helpButtons.Length; i++)
-                    helpButtons[i].interactable = !GameManager.OptionsShown && helpShown[i] && GameManager.HelpUsed[i];
+                    helpButtons[i].interactable = helpShown[i] && GameManager.HelpUsed[i] && CanInteractWithHelp();
                 return;
             }
 
             // make buttons interactable based on context
             if (GameManager.CurrentGameContext == GameContext.MainContext)
             {
-                helpButtons[(int)Help.Change].interactable = !GameManager.HelpUsed[(int)Help.Change] && !GameManager.OptionsShown;
+                helpButtons[(int)Help.Change].interactable = !GameManager.HelpUsed[(int)Help.Change] && CanInteractWithHelp();
             }
             else if (GameManager.CurrentGameContext == GameContext.SongContext)
             {
-                helpButtons[(int)Help.TwoWords].interactable = !GameManager.HelpUsed[(int)Help.TwoWords] && !GameManager.OptionsShown;
-                helpButtons[(int)Help.NextLine].interactable = !GameManager.HelpUsed[(int)Help.NextLine] && !GameManager.OptionsShown;
+                helpButtons[(int)Help.TwoWords].interactable = !GameManager.HelpUsed[(int)Help.TwoWords] && CanInteractWithHelp();
+                helpButtons[(int)Help.NextLine].interactable = !GameManager.HelpUsed[(int)Help.NextLine] && CanInteractWithHelp();
             }
+        }
+
+        private bool CanInteractWithHelp()
+        {
+            return !GameManager.OptionsShown && !GameManager.Answered;
         }
         #endregion
 

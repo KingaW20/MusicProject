@@ -72,7 +72,7 @@ namespace Scripts
 
             if (resultShown)
             {
-                bool correct = answer.text.ToLower() == GameManager.CorrectAnswer.ToLower();
+                bool correct = GameManager.SongManager.IsAnswerCorrect(answer.text);
                 if (correct) GameManager.CorrectAnswers++;
                 background.color = correct ? new Color(0f, 1f, 0f) : new Color(1f, 0f, 0.524f);
                 answer.image.color = correct ? new Color(0f, 1f, 0f) : new Color(1f, 0f, 0f);

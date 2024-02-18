@@ -1,6 +1,8 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.IO;
 using UnityEngine;
 
 namespace Scripts
@@ -12,8 +14,16 @@ namespace Scripts
         SongContext
     }
 
+    public static class Constants
+    {
+        public static string CATEGORIES_PATH = Path.Combine(Application.dataPath, "Resources/Songs");
+        public const int CATEGORY_NUMBER = 7;
+    }
+
     public static class GameManager
     {
+        public static SongManager SongManager;
+        public static System.Random Rand;
         public static bool[] HelpUsed;
         public static List<int> ChoosedCategories;
         public static int CurrentSongId;
@@ -23,9 +33,6 @@ namespace Scripts
         public static bool LastAnswerCorrect;
         public static bool Answered;
         public static bool OptionsShown;
-
-        //TODO: to set
-        public static string CorrectAnswer;
 
         //help data
         public static int ChoosedCategoryToChange;
@@ -38,10 +45,11 @@ namespace Scripts
             ChoosedHelpWords = new();
             AnswerWordNumber = 3;
             CorrectAnswers = 0;
-            CorrectAnswer = "";
             LastAnswerCorrect = true;
             Answered = false;
             OptionsShown = false;
+            Rand = new();
+            SongManager = new();
         }
 
         //TODO: class Category

@@ -7,13 +7,15 @@ namespace Scripts
 {
     public class MainContextController : MonoBehaviour
     {
-        [SerializeField] private Text[] categoryTexts = new Text[7];
-        [SerializeField] private Button[] categoryButtons = new Button[7];
+        [SerializeField] private Text[] categoryTexts = new Text[Constants.CATEGORY_NUMBER];
+        [SerializeField] private Button[] categoryButtons = new Button[Constants.CATEGORY_NUMBER];
 
         void Update()
         {
             if (GameManager.CurrentGameContext == GameContext.MainContext)
                 CategoryButtonsInteractivityUpdate();
+            for(int i = 0; i < Constants.CATEGORY_NUMBER; i++)
+                categoryTexts[i].text = GameManager.SongManager.GetCategoryNameById(i);
         }
 
         public void OnCategoryShowButtonClick(int categoryId)

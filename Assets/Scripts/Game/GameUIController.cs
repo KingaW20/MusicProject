@@ -22,7 +22,7 @@ namespace Scripts
         [SerializeField] private Text nextLineText;
 
         [SerializeField] private Button[] helpWordButtons = new Button[9];
-        [SerializeField] private Button[] categoryToChangeButtons = new Button[7];
+        [SerializeField] private Button[] categoryToChangeButtons = new Button[Constants.CATEGORY_NUMBER];
 
         [Header("Options properties")]
         [SerializeField] private GameObject optionsBox;
@@ -93,8 +93,7 @@ namespace Scripts
                 cat.interactable = false;
             categoryToChangeButtons[categoryId].gameObject.GetComponent<Image>().color = new Color(0f, 1f, 0f);
             GameManager.HelpUsed[(int)Help.Change] = true;
-
-            //TODO: actual change of category
+            GameManager.SongManager.ChangeCategory(categoryId);
         }
 
         public void OnNextLineHelpButtonClick()
@@ -112,6 +111,12 @@ namespace Scripts
 
         private void HelpButtonsInteractivityUpdate()
         {
+            //change category buttons
+            for (int id = 0; id < Constants.CATEGORY_NUMBER; id++)
+            {
+                categoryToChangeButtons[id].interactable = !GameManager.ChoosedCategories.Contains(id);
+            }
+
             for (int i = 0; i < helpButtons.Length; i++)
             {
                 helpButtons[i].interactable = false;
@@ -136,6 +141,12 @@ namespace Scripts
                 helpButtons[(int)Help.TwoWords].interactable = !GameManager.HelpUsed[(int)Help.TwoWords] && CanInteractWithHelp();
                 helpButtons[(int)Help.NextLine].interactable = !GameManager.HelpUsed[(int)Help.NextLine] && CanInteractWithHelp();
             }
+        }
+
+        private void HelpButtonTextsUpdate()
+        {
+            for (int i = 0; i < Constants.CATEGORY_NUMBER; i++)
+                categoryToChangeButtons[i].GetComponentInChildren<Text>().text = GameManager.SongManager.GetCategoryNameById(i);
         }
 
         private bool CanInteractWithHelp()
@@ -180,6 +191,7 @@ namespace Scripts
         private void ContentUpdate()
         {
             OptionsContentUpdate();
+            HelpButtonTextsUpdate();
             HelpButtonsInteractivityUpdate();
             PointsUpdate();
             for (int i = 0; i < helpBoxes.Length; i++)
@@ -190,7 +202,7 @@ namespace Scripts
         {
             for (int i = 0; i < GameManager.CorrectAnswers; i++)
                 points[i].gameObject.GetComponent<Image>().color = new Color(0f, 1f, 0f);
-            if (!GameManager.LastAnswerCorrect && GameManager.CorrectAnswers < 7)
+            if (!GameManager.LastAnswerCorrect && GameManager.CorrectAnswers < Constants.CATEGORY_NUMBER)
                 points[GameManager.CorrectAnswers].gameObject.GetComponent<Image>().color = new Color(1f, 0f, 0f);
         }
     }

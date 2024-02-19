@@ -10,42 +10,42 @@ namespace Scripts
     public class Category
     {
         private string name;
-        private List<Song> songs;
+        private List<string> allSongTitles;
+        private List<Song> selectedSongs;
 
         public string Name { get => name; }
-        public List<Song> Songs { get => songs; }
+        public List<string> AllSongTitles { get => allSongTitles; }
+        public List<Song> SelectedSongs { get => selectedSongs; }
 
         public Category(string path)
         {
             this.name = Path.GetFileName(path);
-            this.songs = new();
+            this.allSongTitles = new();
+            this.selectedSongs = new();
 
             if (Directory.Exists(path))
             {
                 string[] files = Directory.GetFiles(path);
-                var songs = files.Where(file => file.EndsWith(".json", StringComparison.OrdinalIgnoreCase)).ToArray();
+                var songFileNames = files.Where(file => file.EndsWith(".json", StringComparison.OrdinalIgnoreCase)).ToArray();
+                var selectedSongFileNames = songFileNames.OrderBy(song => GameManager.Rand.Next()).Take(Constants.SONG_NUMBER).ToArray();
 
-                foreach (var songFile in songs)
+                foreach (var songFile in songFileNames)
+                {
+                    var songTitle = Path.GetFileNameWithoutExtension(songFile);
+                    this.allSongTitles.Add(songTitle);
+                }
+
+                foreach (var songFile in selectedSongFileNames)
                 {
                     var songTitle = Path.GetFileNameWithoutExtension(songFile);
                     string songJson = File.ReadAllText(Path.Combine(path, songFile));
-                    this.songs.Add(new Song(songTitle, songJson));
+                    this.selectedSongs.Add(new Song(songTitle, songJson));
                 }
             }
             else
             {
                 Debug.Log($"Path {path} doesn't exist");
             }
-        }
-
-        public List<string> GetSongsTitles()
-        {
-            List<string> songsTitles = new();
-            foreach(var song in songs)
-            {
-                songsTitles.Add(song.Title);
-            }
-            return songsTitles;
         }
     }
 }

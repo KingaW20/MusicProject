@@ -13,23 +13,25 @@ namespace Scripts
         void Update()
         {
             if (GameManager.CurrentGameContext == GameContext.MainContext)
-                CategoryButtonsInteractivityUpdate();
-            for(int i = 0; i < Constants.CATEGORY_NUMBER; i++)
-                categoryTexts[i].text = GameManager.SongManager.GetCategoryNameById(i);
+            {
+                if (GameManager.CurrentGameContext == GameContext.MainContext)
+                    CategoryButtonsInteractivityUpdate();
+                for (int i = 0; i < Constants.CATEGORY_NUMBER; i++)
+                    categoryTexts[i].text = GameManager.SongManager.GetCategoryNameById(i);
+            }
         }
 
         public void OnCategoryShowButtonClick(int categoryId)
         {
             GameManager.ChoosedCategories.Add(categoryId);
+            GameManager.SongManager.CurrentCategoryId = categoryId;
             GameManager.CurrentGameContext = GameContext.CategoryContext;
         }
 
         private void CategoryButtonsInteractivityUpdate()
         {
-            foreach (var catBut in categoryButtons)
-                catBut.interactable = !GameManager.OptionsShown;
-            foreach (var cat in GameManager.ChoosedCategories)
-                categoryButtons[cat].interactable = false;
+            for (int id = 0; id < Constants.CATEGORY_NUMBER; id++)
+                categoryButtons[id].interactable = !GameManager.ChoosedCategories.Contains(id) && !GameManager.OptionsShown;
         }
     }
 }

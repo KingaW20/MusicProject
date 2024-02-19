@@ -16,19 +16,20 @@ namespace Scripts
         [SerializeField] private Button mainInfoButton;
 
         [Header("Help properties")]
-        [SerializeField] private GameObject[] helpBoxes = new GameObject[3];
-        [SerializeField] private Button[] helpButtons = new Button[3];
-        [SerializeField] private GameObject[] helpUsedImages = new GameObject[3];
-        [SerializeField] private Text nextLineText;
+        [SerializeField] private GameObject[] helpBoxes = new GameObject[Constants.HELP_NUMBER];
+        [SerializeField] private Button[] helpButtons = new Button[Constants.HELP_NUMBER];
+        [SerializeField] private GameObject[] helpUsedImages = new GameObject[Constants.HELP_NUMBER];
 
         [SerializeField] private Button[] helpWordButtons = new Button[9];
         [SerializeField] private Button[] categoryToChangeButtons = new Button[Constants.CATEGORY_NUMBER];
+        [SerializeField] private Text nextLineText;
 
         [Header("Options properties")]
         [SerializeField] private GameObject optionsBox;
+        [SerializeField] private Button optionsButton;
         [SerializeField] private Button saveGameButton;
 
-        private bool[] helpShown = new bool[3];
+        private bool[] helpShown = new bool[Constants.HELP_NUMBER];
 
         public enum Help
         {
@@ -41,7 +42,7 @@ namespace Scripts
         {
             GameManager.Setup();
 
-            for (int i = 0; i < helpShown.Length; i++)
+            for (int i = 0; i < Constants.HELP_NUMBER; i++)
             {
                 helpShown[i] = false;
                 helpUsedImages[i].SetActive(GameManager.HelpUsed[i]);
@@ -62,6 +63,8 @@ namespace Scripts
         #region Help Functions
         public void OnTwoWordsHelpButtonClick()
         {
+            for (int i = 0; i < helpWordButtons.Length; i++)
+                helpWordButtons[i].gameObject.SetActive(i < GameManager.AnswerWordNumber);
             ShowHelp(Help.TwoWords);
         }
 
@@ -70,9 +73,9 @@ namespace Scripts
             GameManager.ChoosedHelpWords.Add(wordId);
             helpWordButtons[wordId].enabled = false;
             helpWordButtons[wordId].gameObject.GetComponent<Image>().color = new Color(0f, 1f, 0f);
-            //TODO: show this word from answer in helpWordButtons[wordId].GetChild(0).GetComponent<Text>().text
+            helpWordButtons[wordId].GetComponentInChildren<Text>().text = GameManager.SongManager.GetWordIdFromCurrentSongAnswer(wordId);
 
-            if (GameManager.ChoosedHelpWords.Count == 2)
+            if (GameManager.ChoosedHelpWords.Count == Constants.HELP_WORDS)
             {
                 foreach (var word in helpWordButtons)
                     word.interactable = false;
@@ -82,13 +85,13 @@ namespace Scripts
 
         public void OnChangeHelpButtonClick()
         {
+            for (int id = 0; id < Constants.CATEGORY_NUMBER; id++)
+                categoryToChangeButtons[id].interactable = !GameManager.ChoosedCategories.Contains(id);
             ShowHelp(Help.Change);
         }
 
         public void OnChooseCategoryToChangeButtonClick(int categoryId)
         {
-            GameManager.ChoosedCategoryToChange = categoryId;
-
             foreach (var cat in categoryToChangeButtons)
                 cat.interactable = false;
             categoryToChangeButtons[categoryId].gameObject.GetComponent<Image>().color = new Color(0f, 1f, 0f);
@@ -98,6 +101,7 @@ namespace Scripts
 
         public void OnNextLineHelpButtonClick()
         {
+            nextLineText.text = GameManager.SongManager.GetCurrentSong().NextLine;
             ShowHelp(Help.NextLine);
             GameManager.HelpUsed[(int)Help.NextLine] = true;
         }
@@ -111,22 +115,15 @@ namespace Scripts
 
         private void HelpButtonsInteractivityUpdate()
         {
-            //change category buttons
-            for (int id = 0; id < Constants.CATEGORY_NUMBER; id++)
+            for (int i = 0; i < Constants.HELP_NUMBER; i++)
             {
-                categoryToChangeButtons[id].interactable = !GameManager.ChoosedCategories.Contains(id);
-            }
-
-            for (int i = 0; i < helpButtons.Length; i++)
-            {
-                helpButtons[i].interactable = false;
                 helpUsedImages[i].SetActive(GameManager.HelpUsed[i] && !helpBoxes[i].activeSelf);
             }
 
             // if any of helps is shown set only button of this help interactable
             if (helpShown.Any(item => item == true))
             {
-                for (int i = 0; i < helpButtons.Length; i++)
+                for (int i = 0; i < Constants.HELP_NUMBER; i++)
                     helpButtons[i].interactable = helpShown[i] && GameManager.HelpUsed[i] && CanInteractWithHelp();
                 return;
             }
@@ -134,11 +131,14 @@ namespace Scripts
             // make buttons interactable based on context
             if (GameManager.CurrentGameContext == GameContext.MainContext)
             {
+                helpButtons[(int)Help.TwoWords].interactable = false;
                 helpButtons[(int)Help.Change].interactable = !GameManager.HelpUsed[(int)Help.Change] && CanInteractWithHelp();
+                helpButtons[(int)Help.NextLine].interactable = false;
             }
             else if (GameManager.CurrentGameContext == GameContext.SongContext)
             {
                 helpButtons[(int)Help.TwoWords].interactable = !GameManager.HelpUsed[(int)Help.TwoWords] && CanInteractWithHelp();
+                helpButtons[(int)Help.Change].interactable = false;
                 helpButtons[(int)Help.NextLine].interactable = !GameManager.HelpUsed[(int)Help.NextLine] && CanInteractWithHelp();
             }
         }
@@ -151,18 +151,16 @@ namespace Scripts
 
         private bool CanInteractWithHelp()
         {
-            return !GameManager.OptionsShown && !GameManager.Answered;
+            return !GameManager.OptionsShown && !GameManager.SongManager.IsAnswered && 
+                GameManager.SongManager.IsSongEnded() && !GameManager.SongManager.IsHit();
         }
         #endregion
 
         #region Options
         public void OnOptionShowButtonClick()
         {
-            if (!helpShown.Any(item => item == true))
-            {
-                GameManager.OptionsShown = !GameManager.OptionsShown;
-                OptionsContentUpdate();
-            }
+            GameManager.OptionsShown = !GameManager.OptionsShown;
+            OptionsContentUpdate();
         }
 
         public void OnContinueButtonClick()
@@ -186,16 +184,52 @@ namespace Scripts
             optionsBox.SetActive(GameManager.OptionsShown);
             saveGameButton.interactable = false;
         }
+
+        private void OptionsButtonInteractivityUpdate()
+        {
+            optionsButton.interactable = !helpShown.Any(item => item == true) && 
+                ((GameManager.SongManager.IsSongEnded() && GameManager.SongManager.IsAnswered) ||
+                GameManager.SongManager.CurrentTime <= 0);
+        }
         #endregion
 
         private void ContentUpdate()
         {
             OptionsContentUpdate();
+            OptionsButtonInteractivityUpdate();
             HelpButtonTextsUpdate();
             HelpButtonsInteractivityUpdate();
             PointsUpdate();
-            for (int i = 0; i < helpBoxes.Length; i++)
+            MainInfoUpdate();
+            for (int i = 0; i < Constants.HELP_NUMBER; i++)
                 helpBoxes[i].SetActive(helpShown[i]);
+        }
+
+        public void OnHitButtonClick()
+        {
+            GameManager.SongManager.CurrentSongId = Constants.SONG_NUMBER;         //to sprawdziæ wszêdzie
+            GameManager.CurrentGameContext = GameContext.SongContext;
+            GameManager.SongManager.CurrentLineId = 0;
+            GameManager.SongManager.HitSong.RandomizeAnswer();
+            GameManager.SongManager.SongSourcePath = GameManager.SongManager.HitSongFilePath;
+        }
+
+        private void MainInfoUpdate()
+        {
+            mainInfoButton.interactable = GameManager.CurrentGameContext == GameContext.MainContext && GameManager.SongManager.IsHit();
+
+            switch (GameManager.CurrentGameContext)
+            {
+                case GameContext.MainContext:
+                    mainInfoText.text = "HIT ZA 50 000";
+                    break;
+                case GameContext.CategoryContext:
+                    mainInfoText.text = GameManager.SongManager.GetCategoryNameById(GameManager.SongManager.CurrentCategoryId);
+                    break;
+                case GameContext.SongContext:
+                    mainInfoText.text = GameManager.SongManager.GetCurrentSong().Title.ToUpper();
+                    break;
+            }
         }
 
         private void PointsUpdate()

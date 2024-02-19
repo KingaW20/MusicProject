@@ -16,52 +16,62 @@ namespace Scripts
 
     public static class Constants
     {
-        public static string CATEGORIES_PATH = Path.Combine(Application.dataPath, "Resources/Songs");
+        public static string CATEGORIES_PATH = Path.Combine(Application.dataPath, "Resources");
         public const int CATEGORY_NUMBER = 7;
+        public const int SONG_NUMBER = 2;
+        public const int HELP_NUMBER = 3;
+        public const int HELP_WORDS = 2;
+        public const int BLOCK_LINES_NUMBER = 5;
     }
 
     public static class GameManager
     {
-        public static SongManager SongManager;
         public static System.Random Rand;
-        public static bool[] HelpUsed;
+        public static SongManager SongManager;
         public static List<int> ChoosedCategories;
-        public static int CurrentSongId;
         public static GameContext CurrentGameContext;
+        public static bool OptionsShown;
+
+        //answering
         public static int AnswerWordNumber;
         public static int CorrectAnswers;
         public static bool LastAnswerCorrect;
-        public static bool Answered;
-        public static bool OptionsShown;
 
         //help data
-        public static int ChoosedCategoryToChange;
+        public static bool[] HelpUsed;
         public static List<int> ChoosedHelpWords;
 
         public static void Setup()
         {
-            HelpUsed = new bool[3] { false, false, false };
+            Rand = new();
+            SongManager = new();
             ChoosedCategories = new();
-            ChoosedHelpWords = new();
+            OptionsShown = false;
+
             AnswerWordNumber = 3;
             CorrectAnswers = 0;
             LastAnswerCorrect = true;
-            Answered = false;
-            OptionsShown = false;
-            Rand = new();
-            SongManager = new();
+
+            HelpUsed = new bool[3] { false, false, false };
+            ChoosedHelpWords = new();
         }
 
-        //TODO: class Category
-        public static int GetCurrentCategory()
+        public static bool IsAnswerGoodLength(string answer)
         {
-            return ChoosedCategories.LastOrDefault();
+            string[] answerWords = answer.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+            return answerWords.Length == AnswerWordNumber;
         }
 
-        //TODO: class Song
-        public static int GetCurrentSong()
+        public static bool IsAnswerTooShort(string answer)
         {
-            return CurrentSongId;
+            string[] answerWords = answer.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+            return answerWords.Length < AnswerWordNumber;
+        }
+
+        public static bool IsAnswerTooLong(string answer)
+        {
+            string[] answerWords = answer.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+            return answerWords.Length > AnswerWordNumber;
         }
     }
 }

@@ -9,83 +9,117 @@ namespace Scripts
     public class SongContextController : MonoBehaviour
     {
         [SerializeField] private Image background;
+        [SerializeField] private Button mainInfoButton;
+
+        [SerializeField] private GameObject songLineBackground;
         [SerializeField] private Text songLine;
         [SerializeField] private InputField answer;
+
         [SerializeField] private Button playButton;
         [SerializeField] private Image playImage;
         [SerializeField] private Image pauseImage;
+        [SerializeField] private AudioSource songSource;
+
         [SerializeField] private Text wordNumberText;
         [SerializeField] private Button checkButton;
         [SerializeField] private Text checkButtonText;
 
-        private bool resultShown;
-        private bool play;
+        [SerializeField] private GameObject rightAnswerBox;
+        [SerializeField] private Text rightAnswerText;
 
         void Start()
         {
-            resultShown = false;
-            play = true;
+            rightAnswerBox.SetActive(false);
         }
 
         void Update()
         {
-            wordNumberText.text = "Liczba s≥Ûw: " + GameManager.AnswerWordNumber;
             answer.gameObject.SetActive(GameManager.CurrentGameContext == GameContext.SongContext);
 
-            /*
-            if music plays (didn't end)
-            {
-                playButton.interactable = !GameManager.OptionsShown;
-                checkButton.interactable = false;
+            if (GameManager.CurrentGameContext == GameContext.SongContext)
+            { 
+                wordNumberText.text = "Liczba s≥Ûw: " + GameManager.AnswerWordNumber;
+
+                GameManager.SongManager.CurrentTime = songSource.time;
+                answer.interactable = GameManager.SongManager.IsSongEnded();
+                songLine.text = GameManager.SongManager.GetCurrentLine();
+
+                if (!GameManager.SongManager.IsSongEnded())
+                {
+                    playButton.interactable = !GameManager.OptionsShown;
+                    checkButton.interactable = false;
+                }
+                else
+                {
+                    songSource.Pause();
+                    playButton.interactable = false;
+                    playImage.gameObject.SetActive(true);
+                    pauseImage.gameObject.SetActive(false);
+                    if (GameManager.IsAnswerGoodLength(answer.text))
+                        checkButton.interactable = !GameManager.OptionsShown;
+                    else
+                        checkButton.interactable = false;
+                }
             }
-            else if music ended
-            {
-                playButton.interactable = false;
-                play = true;
-                playImage.gameObject.SetActive(play);
-                pauseImage.gameObject.SetActive(!play);
-                if answer is not empty
-                    checkButton.interactable = !GameManager.OptionsShown;
-            }
-            */
         }
 
         public void OnPlayAndPauseButtonClick()
         {
-            play = !play;
-            playImage.gameObject.SetActive(play);
-            pauseImage.gameObject.SetActive(!play);
-
-            if (play)
+            if (songSource.clip == null)
             {
-                //TODO: play the music
+                songSource.clip = Resources.Load<AudioClip>(GameManager.SongManager.SongSourcePath);
+                Debug.Log(songSource.clip);
+            }
+
+            if (!songSource.isPlaying)
+            {
+                songSource.Play();
             }
             else
             {
-                //TODO: pause the music
+                songSource.Pause();
             }
+
+            playImage.gameObject.SetActive(!songSource.isPlaying);
+            pauseImage.gameObject.SetActive(songSource.isPlaying);
         }
 
         public void OnCheckAnswerButtonClick()
         {
-            resultShown = !resultShown;
+            GameManager.SongManager.IsAnswered = !GameManager.SongManager.IsAnswered;
 
-            if (resultShown)
+            //TODO: tu coú jest nie tak, bo nie przechodzi dobrze
+            if (GameManager.SongManager.IsAnswered)
             {
                 bool correct = GameManager.SongManager.IsAnswerCorrect(answer.text);
                 if (correct) GameManager.CorrectAnswers++;
                 background.color = correct ? new Color(0f, 1f, 0f) : new Color(1f, 0f, 0.524f);
+                songLineBackground.GetComponent<Image>().color = correct ? new Color(0f, 1f, 0f) : new Color(1f, 0f, 0f);
+                mainInfoButton.GetComponent<Image>().color = correct ? new Color(0f, 1f, 0f) : new Color(1f, 0f, 0f);
                 answer.image.color = correct ? new Color(0f, 1f, 0f) : new Color(1f, 0f, 0f);
+                playButton.GetComponent<Image>().color = correct ? new Color(0f, 1f, 0f) : new Color(1f, 0f, 0f);
+                checkButton.GetComponent<Image>().color = correct ? new Color(0f, 1f, 0f) : new Color(1f, 0f, 0f);
                 GameManager.LastAnswerCorrect = correct;
-                GameManager.Answered = true;
+                if (!correct)
+                {
+                    rightAnswerBox.SetActive(true);
+                    rightAnswerText.text = GameManager.SongManager.GetCurrentSongAnswer().ToUpper();
+                }
             }
-            if (!resultShown)
+            if (!GameManager.SongManager.IsAnswered)
             {
+                songSource.clip = null;
+                GameManager.SongManager.SongSourcePath = "";
+
                 GameManager.AnswerWordNumber++;
                 answer.text = "";
                 background.color = new Color(1f, 1f, 1f);
+                songLineBackground.GetComponent<Image>().color = new Color(1f, 1f, 1f);
+                mainInfoButton.GetComponent<Image>().color = new Color(1f, 1f, 1f);
                 answer.image.color = new Color(1f, 1f, 1f);
-                GameManager.Answered = false;
+                playButton.GetComponent<Image>().color = new Color(1f, 1f, 1f);
+                checkButton.GetComponent<Image>().color = new Color(1f, 1f, 1f);
+                rightAnswerBox.SetActive(false);
                 if (GameManager.LastAnswerCorrect)
                     GameManager.CurrentGameContext = GameContext.MainContext;
                 else
@@ -97,7 +131,9 @@ namespace Scripts
 
         private void SongContextButtonsInteractivityUpdate()
         {
-            checkButtonText.text = resultShown ? "Wybierz kolejn• kategori " : "Tak to lecia£o!";
+            checkButtonText.text = GameManager.SongManager.IsAnswered ? "Wybierz kolejn• kategori " : "Tak to lecia£o!";
+            checkButtonText.text = GameManager.LastAnswerCorrect && 
+                GameManager.CorrectAnswers > Constants.CATEGORY_NUMBER ? "Wygra£eå! Zako—cz gr " : checkButtonText.text;
             checkButtonText.text = GameManager.LastAnswerCorrect ? checkButtonText.text : "Zako—cz gr ";
         }
     }

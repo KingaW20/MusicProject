@@ -56,18 +56,6 @@ namespace Scripts
             ChoosedHelpWords = new();
         }
 
-        public static bool IsAnswerGoodLength(string answer)
-        {
-            string[] answerWords = answer.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
-            return answerWords.Length == AnswerWordNumber;
-        }
-
-        public static bool IsAnswerTooShort(string answer)
-        {
-            string[] answerWords = answer.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
-            return answerWords.Length < AnswerWordNumber;
-        }
-
         public static bool IsAnswerTooLong(string answer)
         {
             string[] answerWords = answer.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);

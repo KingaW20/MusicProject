@@ -9,6 +9,8 @@ namespace Scripts
     public class SongContextController : MonoBehaviour
     {
         [SerializeField] private Image background;
+        [SerializeField] private Sprite basicBackground;
+        [SerializeField] private Sprite redBackground;
         [SerializeField] private Button mainInfoButton;
 
         [SerializeField] private GameObject songLineBackground;
@@ -55,10 +57,10 @@ namespace Scripts
                     playButton.interactable = false;
                     playImage.gameObject.SetActive(true);
                     pauseImage.gameObject.SetActive(false);
-                    if (GameManager.IsAnswerGoodLength(answer.text))
-                        checkButton.interactable = !GameManager.OptionsShown;
-                    else
+                    if (GameManager.IsAnswerTooLong(answer.text))
                         checkButton.interactable = false;
+                    else
+                        checkButton.interactable = !GameManager.OptionsShown;
                 }
             }
         }
@@ -93,7 +95,8 @@ namespace Scripts
             {
                 bool correct = GameManager.SongManager.IsAnswerCorrect(answer.text);
                 if (correct) GameManager.CorrectAnswers++;
-                background.color = correct ? new Color(0f, 1f, 0f) : new Color(1f, 0f, 0.524f);
+                background.sprite = correct ? basicBackground : redBackground;
+                background.color = correct ? new Color(0f, 1f, 0f) : new Color(1f, 1f, 1f);
                 songLineBackground.GetComponent<Image>().color = correct ? new Color(0f, 1f, 0f) : new Color(1f, 0f, 0f);
                 mainInfoButton.GetComponent<Image>().color = correct ? new Color(0f, 1f, 0f) : new Color(1f, 0f, 0f);
                 answer.image.color = correct ? new Color(0f, 1f, 0f) : new Color(1f, 0f, 0f);
@@ -113,6 +116,7 @@ namespace Scripts
 
                 GameManager.AnswerWordNumber++;
                 answer.text = "";
+                background.sprite = basicBackground;
                 background.color = new Color(1f, 1f, 1f);
                 songLineBackground.GetComponent<Image>().color = new Color(1f, 1f, 1f);
                 mainInfoButton.GetComponent<Image>().color = new Color(1f, 1f, 1f);

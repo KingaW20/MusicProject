@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
@@ -42,11 +43,11 @@ namespace Scripts
             { 
                 wordNumberText.text = "Liczba s≥Ûw: " + GameManager.AnswerWordNumber;
 
-                GameManager.SongManager.CurrentTime = songSource.time;
-                answer.interactable = GameManager.SongManager.IsSongEnded();
-                songLine.text = GameManager.SongManager.GetCurrentLine();
+                SongManager.CurrentTime = songSource.time;
+                answer.interactable = SongManager.IsSongEnded();
+                songLine.text = SongManager.GetCurrentLine();
 
-                if (!GameManager.SongManager.IsSongEnded())
+                if (!SongManager.IsSongEnded())
                 {
                     playButton.interactable = !GameManager.OptionsShown;
                     checkButton.interactable = false;
@@ -69,7 +70,7 @@ namespace Scripts
         {
             if (songSource.clip == null)
             {
-                songSource.clip = Resources.Load<AudioClip>(GameManager.SongManager.SongSourcePath);
+                songSource.clip = Resources.Load<AudioClip>(SongManager.SongSourcePath);
                 Debug.Log(songSource.clip);
             }
 
@@ -88,57 +89,53 @@ namespace Scripts
 
         public void OnCheckAnswerButtonClick()
         {
-            GameManager.SongManager.IsAnswered = !GameManager.SongManager.IsAnswered;
+            SongManager.IsAnswered = !SongManager.IsAnswered;
 
-            //TODO: tu coú jest nie tak, bo nie przechodzi dobrze
-            if (GameManager.SongManager.IsAnswered)
+            if (SongManager.IsAnswered)
             {
-                bool correct = GameManager.SongManager.IsAnswerCorrect(answer.text);
-                if (correct) GameManager.CorrectAnswers++;
-                background.sprite = correct ? basicBackground : redBackground;
-                background.color = correct ? new Color(0f, 1f, 0f) : new Color(1f, 1f, 1f);
-                songLineBackground.GetComponent<Image>().color = correct ? new Color(0f, 1f, 0f) : new Color(1f, 0f, 0f);
-                mainInfoButton.GetComponent<Image>().color = correct ? new Color(0f, 1f, 0f) : new Color(1f, 0f, 0f);
-                answer.image.color = correct ? new Color(0f, 1f, 0f) : new Color(1f, 0f, 0f);
-                playButton.GetComponent<Image>().color = correct ? new Color(0f, 1f, 0f) : new Color(1f, 0f, 0f);
-                checkButton.GetComponent<Image>().color = correct ? new Color(0f, 1f, 0f) : new Color(1f, 0f, 0f);
-                GameManager.LastAnswerCorrect = correct;
+                bool correct = SongManager.IsAnswerCorrect(answer.text);
+                GameManager.AnswersCorrectness.Add(correct);
+                ChangeButtonColor(correct ? Constants.POSITIVE_COLOR : Constants.NEUTRAL_COLOR, correct);
                 if (!correct)
-                {
-                    rightAnswerBox.SetActive(true);
-                    rightAnswerText.text = GameManager.SongManager.GetCurrentSongAnswer().ToUpper();
-                }
+                    rightAnswerText.text = SongManager.GetCurrentSong().Answer.ToUpper();
             }
-            if (!GameManager.SongManager.IsAnswered)
+            if (!SongManager.IsAnswered)
             {
                 songSource.clip = null;
-                GameManager.SongManager.SongSourcePath = "";
-
+                SongManager.SongSourcePath = "";
                 GameManager.AnswerWordNumber++;
                 answer.text = "";
-                background.sprite = basicBackground;
-                background.color = new Color(1f, 1f, 1f);
-                songLineBackground.GetComponent<Image>().color = new Color(1f, 1f, 1f);
-                mainInfoButton.GetComponent<Image>().color = new Color(1f, 1f, 1f);
-                answer.image.color = new Color(1f, 1f, 1f);
-                playButton.GetComponent<Image>().color = new Color(1f, 1f, 1f);
-                checkButton.GetComponent<Image>().color = new Color(1f, 1f, 1f);
-                rightAnswerBox.SetActive(false);
-                if (GameManager.LastAnswerCorrect)
-                    GameManager.CurrentGameContext = GameContext.MainContext;
-                else
+                ChangeButtonColor(Constants.NEUTRAL_COLOR, true);
+                if ((GameManager.AnswersCorrectness.Last() && GameManager.AnswersCorrectness.Count > Constants.CATEGORY_NUMBER) 
+                    || !GameManager.AnswersCorrectness.Last())
                     SceneManager.LoadScene("Menu");
+                else if (GameManager.AnswersCorrectness.Last())
+                    GameManager.CurrentGameContext = GameContext.MainContext;
+
             }
 
             SongContextButtonsInteractivityUpdate();
         }
 
+        private void ChangeButtonColor(Color color, bool correct)
+        {
+            this.background.sprite = correct ? basicBackground : redBackground;
+            this.background.color = color;
+            songLineBackground.GetComponent<Image>().color = color;
+            mainInfoButton.GetComponent<Image>().color = color;
+            answer.image.color = color;
+            playButton.GetComponent<Image>().color = color;
+            checkButton.GetComponent<Image>().color = color;
+            rightAnswerBox.SetActive(!correct);
+        }
+
         private void SongContextButtonsInteractivityUpdate()
         {
-            checkButtonText.text = GameManager.SongManager.IsAnswered ? "Wybierz kolejn• kategori " : "Tak to lecia£o!";
-            checkButtonText.text = GameManager.LastAnswerCorrect && 
-                GameManager.CorrectAnswers > Constants.CATEGORY_NUMBER ? "Wygra£eå! Zako—cz gr " : checkButtonText.text;
-            checkButtonText.text = GameManager.LastAnswerCorrect ? checkButtonText.text : "Zako—cz gr ";
+            checkButtonText.text = SongManager.IsAnswered ? "Wybierz kolejn• kategori " : "Tak to lecia£o!";
+            checkButtonText.text = 
+                GameManager.AnswersCorrectness.Last() && GameManager.AnswersCorrectness.Count > Constants.CATEGORY_NUMBER 
+                ? "Wygra£eå! Zako—cz gr " : checkButtonText.text;
+            checkButtonText.text = GameManager.AnswersCorrectness.Last() ? checkButtonText.text : "Zako—cz gr ";
         }
     }
 }

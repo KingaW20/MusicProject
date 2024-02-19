@@ -22,10 +22,9 @@ public class MenuUIController : MonoBehaviour
 
     public void OnPlayButtonClick()
     {
-        //TODO: jeœli bêdzie mo¿liwoœæ wyboru kategorii, które Ci pasuj¹
-        //SwitchContext(MenuContext.PlayContext);
+        //TODO: context with choosing categories to game
+        //SwitchContext(MenuContext.PlayContext); instead of loadScene
 
-        //SceneManager.LoadScene("Game", LoadSceneMode.Additive);
         SceneManager.LoadScene("Game");
     }
 

@@ -650,6 +650,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   background: {fileID: 905000983}
+  basicBackground: {fileID: 21300000, guid: a093780a76b8e8c4c8b121e123d21a82, type: 3}
+  redBackground: {fileID: 21300000, guid: ed5cb452ceea8ad4bad0f71f9651c530, type: 3}
   mainInfoButton: {fileID: 169871019}
   songLineBackground: {fileID: 765339584}
   songLine: {fileID: 1516806016}
@@ -1127,37 +1129,6 @@ MonoBehaviour:
   - {fileID: 399583322}
   mainInfoText: {fileID: 52480026}
   mainInfoButton: {fileID: 169871019}
-  helpBoxes:
-  - {fileID: 706896678}
-  - {fileID: 1658092576}
-  - {fileID: 465937768}
-  helpButtons:
-  - {fileID: 1476127153}
-  - {fileID: 1388459368}
-  - {fileID: 1194553045}
-  helpUsedImages:
-  - {fileID: 1695656940}
-  - {fileID: 366059825}
-  - {fileID: 1309702701}
-  helpWordButtons:
-  - {fileID: 1147583824}
-  - {fileID: 1692335980}
-  - {fileID: 394698327}
-  - {fileID: 1547785238}
-  - {fileID: 1054802594}
-  - {fileID: 1399661008}
-  - {fileID: 820923323}
-  - {fileID: 533685103}
-  - {fileID: 1539760001}
-  categoryToChangeButtons:
-  - {fileID: 1454420866}
-  - {fileID: 1301718325}
-  - {fileID: 405211275}
-  - {fileID: 137497087}
-  - {fileID: 2122713680}
-  - {fileID: 1893919848}
-  - {fileID: 820791511}
-  nextLineText: {fileID: 1187931552}
   optionsBox: {fileID: 1038843951}
   optionsButton: {fileID: 286611166}
   saveGameButton: {fileID: 993833812}
@@ -10157,6 +10128,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1818490427}
+  - component: {fileID: 1818490428}
   m_Layer: 5
   m_Name: Help
   m_TagString: Untagged
@@ -10190,6 +10162,49 @@ RectTransform:
   m_AnchoredPosition: {x: 200, y: 75}
   m_SizeDelta: {x: -400, y: 150}
   m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &1818490428
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1818490426}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: be851ed3a3a3844448dc5fd38b67fa9c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  helpBoxes:
+  - {fileID: 706896678}
+  - {fileID: 1658092576}
+  - {fileID: 465937768}
+  helpButtons:
+  - {fileID: 1476127153}
+  - {fileID: 1388459368}
+  - {fileID: 1194553045}
+  helpUsedImages:
+  - {fileID: 1695656940}
+  - {fileID: 366059825}
+  - {fileID: 1309702701}
+  helpWordButtons:
+  - {fileID: 1147583824}
+  - {fileID: 1692335980}
+  - {fileID: 394698327}
+  - {fileID: 1547785238}
+  - {fileID: 1054802594}
+  - {fileID: 1399661008}
+  - {fileID: 820923323}
+  - {fileID: 533685103}
+  - {fileID: 1539760001}
+  categoryToChangeButtons:
+  - {fileID: 1454420866}
+  - {fileID: 1301718325}
+  - {fileID: 405211275}
+  - {fileID: 137497087}
+  - {fileID: 2122713680}
+  - {fileID: 1893919848}
+  - {fileID: 820791511}
+  nextLineText: {fileID: 1187931552}
 --- !u!1 &1876183485
 GameObject:
   m_ObjectHideFlags: 0

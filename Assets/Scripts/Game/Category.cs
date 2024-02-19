@@ -33,13 +33,11 @@ namespace Scripts
                 {
                     var songTitle = Path.GetFileNameWithoutExtension(songFile);
                     this.allSongTitles.Add(songTitle);
-                }
-
-                foreach (var songFile in selectedSongFileNames)
-                {
-                    var songTitle = Path.GetFileNameWithoutExtension(songFile);
-                    string songJson = File.ReadAllText(Path.Combine(path, songFile));
-                    this.selectedSongs.Add(new Song(songTitle, songJson));
+                    if (selectedSongFileNames.Contains(songFile))
+                    {
+                        string songJson = File.ReadAllText(Path.Combine(path, songFile));
+                        this.selectedSongs.Add(new Song(this.name, songTitle, songJson));
+                    }
                 }
             }
             else

@@ -17,17 +17,17 @@ namespace Scripts
                 foreach (var songBut in songButtons)
                     songBut.interactable = !GameManager.OptionsShown;
                 for (int i = 0; i < Constants.SONG_NUMBER; i++)
-                    songTexts[i].text = GameManager.SongManager.GetCurrentCatSongTitleById(i);
+                    songTexts[i].text = SongManager.GetCurrentCatSongTitleById(i).ToUpper();
             }
         }
 
         public void OnSongShowButtonClick(int songId)
         {
-            GameManager.SongManager.CurrentSongId = songId;
+            SongManager.CurrentSongId = songId;
+            SongManager.CurrentLineId = 0;
+            SongManager.GetCurrentSong().RandomizeAnswer();
+            SongManager.SongSourcePath = SongManager.GetCurrentSong().GetSongFilePathInResources();
             GameManager.CurrentGameContext = GameContext.SongContext;
-            GameManager.SongManager.CurrentLineId = 0;
-            GameManager.SongManager.GetCurrentSong().RandomizeAnswer();
-            GameManager.SongManager.SongSourcePath = GameManager.SongManager.GetCurrentSong().GetSongFilePath();
         }
     }
 }

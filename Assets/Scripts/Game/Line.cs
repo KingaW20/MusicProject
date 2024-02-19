@@ -22,5 +22,17 @@ namespace Scripts
             this.endTime = float.Parse(lineDict["end"], System.Globalization.CultureInfo.InvariantCulture);
             this.text = lineDict["text"];
         }
+
+        public static string[] GetTextWords(string text)
+        {
+            return text.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+        }
+
+        public static string[] GetTextWordsPart(string[] textWords, int partLength, int textStart = 0)
+        {
+            string[] textWordsPart = new string[partLength];
+            Array.Copy(textWords, textStart, textWordsPart, 0, partLength);
+            return textWordsPart;
+        }
     }
 }

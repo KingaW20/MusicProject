@@ -18,6 +18,8 @@ namespace Scripts
 
         public static void Setup()
         {
+            CurrentCategoryId = 0;
+            CurrentSongId = 0;
             CurrentTime = 0f;
             CurrentLineId = 0;
             SongSourcePath = "";
@@ -33,16 +35,22 @@ namespace Scripts
 
         public static string GetCategoryNameById(int id)
         {
+            if (GameManager.SelectedCategories.Count < Constants.CATEGORY_NUMBER)
+                return "";
             return GameManager.SelectedCategories[id].Name;
         }
 
         public static string GetCurrentCatSongTitleById(int id)
         {
+            if (GameManager.SelectedCategories.Count < Constants.CATEGORY_NUMBER)
+                return "";
             return GameManager.SelectedCategories[CurrentCategoryId].SelectedSongs[id].Title;
         }
 
         public static Song GetCurrentSong()
         {
+            if (GameManager.SelectedCategories.Count < Constants.CATEGORY_NUMBER)
+                return null;
             if (CurrentSongId < Constants.SONG_NUMBER)
                 return GameManager.SelectedCategories[CurrentCategoryId].SelectedSongs[CurrentSongId];
             else
@@ -66,6 +74,8 @@ namespace Scripts
 
         public static bool IsSongEnded()
         {
+            if (GetCurrentSong() == null)
+                return false;
             return CurrentTime >= GetCurrentSong().StopTime;
         }
     }

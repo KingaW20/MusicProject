@@ -6,6 +6,13 @@ using UnityEngine.UI;
 
 namespace Scripts
 {
+    public enum Help
+    {
+        TwoWords,
+        Change,
+        NextLine
+    }
+
     public class HelpUIController : MonoBehaviour
     {
         [SerializeField] private GameObject[] helpBoxes = new GameObject[Constants.HELP_NUMBER];
@@ -15,13 +22,6 @@ namespace Scripts
         [SerializeField] private Button[] helpWordButtons = new Button[9];
         [SerializeField] private Button[] categoryToChangeButtons = new Button[Constants.CATEGORY_NUMBER];
         [SerializeField] private Text nextLineText;
-
-        public enum Help
-        {
-            TwoWords,
-            Change,
-            NextLine
-        }
 
         void Update()
         {
@@ -96,17 +96,23 @@ namespace Scripts
             }
 
             // make buttons interactable based on context
-            if (GameManager.CurrentGameContext == GameContext.MainContext)
+            switch(GameManager.CurrentGameContext)
             {
-                helpButtons[(int)Help.TwoWords].interactable = false;
-                helpButtons[(int)Help.Change].interactable = !GameManager.HelpUsed[(int)Help.Change] && CanInteractWithHelp();
-                helpButtons[(int)Help.NextLine].interactable = false;
-            }
-            else if (GameManager.CurrentGameContext == GameContext.SongContext)
-            {
-                helpButtons[(int)Help.TwoWords].interactable = !GameManager.HelpUsed[(int)Help.TwoWords] && CanInteractWithHelp();
-                helpButtons[(int)Help.Change].interactable = false;
-                helpButtons[(int)Help.NextLine].interactable = !GameManager.HelpUsed[(int)Help.NextLine] && CanInteractWithHelp();
+                case (GameContext.MainContext):
+                    helpButtons[(int)Help.TwoWords].interactable = false;
+                    helpButtons[(int)Help.Change].interactable = !GameManager.HelpUsed[(int)Help.Change] && CanInteractWithHelp();
+                    helpButtons[(int)Help.NextLine].interactable = false;
+                    break;
+                case (GameContext.CategoryContext):
+                    helpButtons[(int)Help.TwoWords].interactable = false;
+                    helpButtons[(int)Help.Change].interactable = false;
+                    helpButtons[(int)Help.NextLine].interactable = false;
+                    break;
+                case (GameContext.SongContext):
+                    helpButtons[(int)Help.TwoWords].interactable = !GameManager.HelpUsed[(int)Help.TwoWords] && CanInteractWithHelp();
+                    helpButtons[(int)Help.Change].interactable = false;
+                    helpButtons[(int)Help.NextLine].interactable = !GameManager.HelpUsed[(int)Help.NextLine] && CanInteractWithHelp();
+                    break;
             }
         }
 

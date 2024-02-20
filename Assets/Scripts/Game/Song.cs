@@ -79,7 +79,7 @@ namespace Scripts
             string[] lineAfterAnswerWords = Line.GetTextWords(this.lines[answerLineId].Text);
             string[] nextLineWords = restLineAfterAnswerWords.Concat(lineAfterAnswerWords).ToArray();
             this.nextLine = string.Join(" ", nextLineWords);
-            Debug.Log("Kolejna: " + this.nextLine);
+            Debug.Log("Kolejna linijka: " + this.nextLine);
         }
     }
 }

@@ -69,19 +69,12 @@ namespace Scripts
         public void OnPlayAndPauseButtonClick()
         {
             if (songSource.clip == null)
-            {
                 songSource.clip = Resources.Load<AudioClip>(SongManager.SongSourcePath);
-                Debug.Log(songSource.clip);
-            }
 
             if (!songSource.isPlaying)
-            {
                 songSource.Play();
-            }
             else
-            {
                 songSource.Pause();
-            }
 
             playImage.gameObject.SetActive(!songSource.isPlaying);
             pauseImage.gameObject.SetActive(songSource.isPlaying);
@@ -97,7 +90,7 @@ namespace Scripts
                 GameManager.AnswersCorrectness.Add(correct);
                 ChangeButtonColor(correct ? Constants.POSITIVE_COLOR : Constants.NEUTRAL_COLOR, correct);
                 if (!correct)
-                    rightAnswerText.text = SongManager.GetCurrentSong().Answer.ToUpper();
+                    rightAnswerText.text = SongManager.GetCurrentSong().Answer;
             }
             if (!SongManager.IsAnswered)
             {
@@ -115,6 +108,13 @@ namespace Scripts
             }
 
             SongContextButtonsInteractivityUpdate();
+        }
+
+        public void OnContinueButtonClick()
+        {
+            bool correct = true;
+            GameManager.AnswersCorrectness[GameManager.AnswersCorrectness.Count - 1] = correct;
+            ChangeButtonColor(correct ? Constants.POSITIVE_COLOR : Constants.NEUTRAL_COLOR, correct);
         }
 
         private void ChangeButtonColor(Color color, bool correct)

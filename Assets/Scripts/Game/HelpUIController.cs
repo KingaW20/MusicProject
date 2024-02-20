@@ -71,7 +71,7 @@ namespace Scripts
 
         public void OnNextLineHelpButtonClick()
         {
-            nextLineText.text = SongManager.GetCurrentSong().NextLine.ToUpper();
+            nextLineText.text = SongManager.GetCurrentSong().NextLine;
             ShowHelp(Help.NextLine);
             GameManager.HelpUsed[(int)Help.NextLine] = true;
         }

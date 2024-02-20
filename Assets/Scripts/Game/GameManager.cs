@@ -7,6 +7,13 @@ using UnityEngine;
 
 namespace Scripts
 {
+    public enum MenuContext
+    {
+        MainContext,
+        PlayContext,
+        LoadContext
+    }
+
     public enum GameContext
     {
         MainContext,
@@ -33,6 +40,7 @@ namespace Scripts
     {
         public static System.Random Rand;
         public static List<int> ChoosedCategoryIds;
+        public static MenuContext CurrentMenuContext;
         public static GameContext CurrentGameContext;
         public static bool OptionsShown;
 
@@ -54,8 +62,8 @@ namespace Scripts
         public static void Setup()
         {
             Rand = new();
-            SongManager.Setup();
             ChoosedCategoryIds = new();
+            CurrentMenuContext = MenuContext.MainContext;
             CurrentGameContext = GameContext.MainContext;
             OptionsShown = false;
 
@@ -71,28 +79,28 @@ namespace Scripts
                 HelpShown[i] = false;
         }
 
-        public static void ReadCategories()
+        private static void ReadCategories()
         {
             var path = Constants.CATEGORIES_PATH;
             AllCategoryNames = new();
+
+            string[] categoriesPath = Directory.GetDirectories(Constants.CATEGORIES_PATH);
+            AllCategoryNames.AddRange(categoriesPath.Select(categoryPath => Path.GetFileName(categoryPath)).ToList());
+        }
+
+        public static void LoadChoosedCategories()
+        {
+            var path = Constants.CATEGORIES_PATH;
             SelectedCategories = new();
 
-            if (Directory.Exists(path))
-            {
-                string[] categoriesPath = Directory.GetDirectories(Constants.CATEGORIES_PATH);
-                string[] selectedCategoriesPath = categoriesPath.OrderBy(cat => GameManager.Rand.Next())
-                    .Take(Constants.CATEGORY_NUMBER).ToArray();
+            string[] categoriesPath = Directory.GetDirectories(Constants.CATEGORIES_PATH);
+            string[] selectedCategoriesPath = categoriesPath.Where(catPath => AllCategoryNames.Contains(Path.GetFileName(catPath)))
+                .OrderBy(cat => GameManager.Rand.Next()).Take(Constants.CATEGORY_NUMBER).ToArray();
+            SelectedCategories.AddRange(selectedCategoriesPath.Select(categoryPath => new Category(categoryPath)).ToList());
 
-                AllCategoryNames.AddRange(categoriesPath.Select(categoryPath => Path.GetFileName(categoryPath)).ToList());
-                SelectedCategories.AddRange(selectedCategoriesPath.Select(categoryPath => new Category(categoryPath)).ToList());
-
-                CategoryForChange = GetRandomCategoryFromRest();
-                HitSong = ChooseHitSong();
-            }
-            else
-            {
-                Debug.Log($"Path {path} doesn't exist");
-            }
+            CategoryForChange = GetRandomCategoryFromRest();
+            HitSong = ChooseHitSong();
+            SongManager.Setup();
         }
 
         public static bool IsAnswerTooLong(string answer)
@@ -118,7 +126,7 @@ namespace Scripts
             var mainPath = Constants.CATEGORIES_PATH;
 
             List<string> songPaths = new();
-            foreach (var categoryName in GameManager.AllCategoryNames)
+            foreach (var categoryName in AllCategoryNames)
             {
                 string path = Path.Combine(mainPath, categoryName);
                 var songFileNames = Directory.GetFiles(path)
@@ -137,7 +145,7 @@ namespace Scripts
                 }
             }
 
-            var hitSongPath = songPaths.OrderBy(song => GameManager.Rand.Next()).FirstOrDefault();
+            var hitSongPath = songPaths.OrderBy(song => Rand.Next()).FirstOrDefault();
             var songJson = File.ReadAllText(hitSongPath);
             var hitCategoryName = new DirectoryInfo(Path.GetDirectoryName(hitSongPath)).Name;
             return new Song(hitCategoryName, Path.GetFileNameWithoutExtension(hitSongPath), songJson);

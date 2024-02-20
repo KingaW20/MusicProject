@@ -3,40 +3,32 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-
-public class MenuUIController : MonoBehaviour
+namespace Scripts
 {
-    [SerializeField] private GameObject[] contexts = new GameObject[3];
-
-    public enum MenuContext
+    public class MenuUIController : MonoBehaviour
     {
-        MainContext,
-        PlayContext,
-        LoadContext
-    }
+        [SerializeField] private GameObject[] contexts = new GameObject[3];
 
-    void Start()
-    {
-        SwitchContext(MenuContext.MainContext);
-    }
+        void Awake()
+        {
+            GameManager.Setup();
+        }
 
-    public void OnPlayButtonClick()
-    {
-        //TODO: context with choosing categories to game
-        //SwitchContext(MenuContext.PlayContext); instead of loadScene
+        void Update()
+        {
+            foreach (var contextObject in contexts)
+                contextObject.SetActive(false);
+            contexts[(int)GameManager.CurrentMenuContext].SetActive(true);
+        }
 
-        SceneManager.LoadScene("Game");
-    }
+        public void OnPlayButtonClick()
+        {
+            GameManager.CurrentMenuContext = MenuContext.PlayContext;
+        }
 
-    public void OnLoadButtonClick()
-    {
-        SwitchContext(MenuContext.LoadContext);
-    }
-
-    private void SwitchContext(MenuContext context)
-    {
-        foreach (var contextObject in contexts)
-            contextObject.SetActive(false);
-        contexts[(int)context].SetActive(true);
+        public void OnLoadButtonClick()
+        {
+            GameManager.CurrentMenuContext = MenuContext.LoadContext;
+        }
     }
 }

@@ -19,11 +19,6 @@ namespace Scripts
         [SerializeField] private Button optionsButton;
         [SerializeField] private Button saveGameButton;
 
-        void Start()
-        {
-            GameManager.Setup();
-        }
-
         void Update()
         {
             foreach (var contextObject in contexts)

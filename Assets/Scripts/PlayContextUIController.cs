@@ -4,6 +4,7 @@ using System.Linq;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
+using UnityEngine.Windows;
 
 namespace Scripts
 {
@@ -33,7 +34,7 @@ namespace Scripts
             this.currentCategoriesShown = GameManager.AllCategoryNames.Skip(this.pageSize * this.page).Take(this.pageSize).ToList();
 
             for (int i = 0; i < this.currentCategoriesShown.Count; i++)
-                categoryNames[i].text = this.currentCategoriesShown[i];
+                categoryNames[i].text = this.currentCategoriesShown[i][0].ToString().ToUpper() + this.currentCategoriesShown[i].Substring(1);
 
             for (int i = 0; i < this.pageSize; i++)
             {

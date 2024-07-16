@@ -145,11 +145,11 @@ namespace Scripts
 
         private void SongContextButtonsInteractivityUpdate()
         {
-            checkButtonText.text = SongManager.IsAnswered ? "Wybierz kolejn• kategori " : "Tak to lecia£o!";
+            checkButtonText.text = SongManager.IsAnswered ? "Wybierz kolejnπ kategoriÍ" : "TAK TO LECIA£O!";
             checkButtonText.text = 
                 GameManager.AnswersCorrectness.Last() && GameManager.AnswersCorrectness.Count > Constants.CATEGORY_NUMBER 
-                ? "Wygra£eå! Zako—cz gr " : checkButtonText.text;
-            checkButtonText.text = GameManager.AnswersCorrectness.Last() ? checkButtonText.text : "Zako—cz gr ";
+                ? "Wygra≥eú! ZakoÒcz grÍ" : checkButtonText.text;
+            checkButtonText.text = GameManager.AnswersCorrectness.Last() ? checkButtonText.text : "ZakoÒcz grÍ";
         }
     }
 }

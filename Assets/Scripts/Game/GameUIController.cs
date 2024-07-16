@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
@@ -24,6 +22,7 @@ namespace Scripts
             foreach (var contextObject in contexts)
                 contextObject.SetActive(false);
             contexts[(int)GameManager.CurrentGameContext].SetActive(true);
+
             OptionsUpdate();
             PointsUpdate();
             MainInfoUpdate();
@@ -53,6 +52,7 @@ namespace Scripts
         {
             SongManager.CurrentSongId = Constants.SONG_NUMBER;
             GameManager.CurrentGameContext = GameContext.SongContext;
+            GameManager.JustChangedToSongContext = true;
             SongManager.CurrentLineId = 0;
             GameManager.HitSong.RandomizeAnswer();
             SongManager.SongSourcePath = GameManager.HitSong.GetSongFilePathInResources();

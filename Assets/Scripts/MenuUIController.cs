@@ -1,7 +1,4 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 
 namespace Scripts
 {
@@ -18,17 +15,17 @@ namespace Scripts
         {
             foreach (var contextObject in contexts)
                 contextObject.SetActive(false);
-            contexts[(int)GameManager.CurrentMenuContext].SetActive(true);
+            contexts[(int)GameManager.State.CurrentMenuContext].SetActive(true);
         }
 
         public void OnPlayButtonClick()
         {
-            GameManager.CurrentMenuContext = MenuContext.PlayContext;
+            GameManager.State.CurrentMenuContext = MenuContext.PlayContext;
         }
 
         public void OnLoadButtonClick()
         {
-            GameManager.CurrentMenuContext = MenuContext.LoadContext;
+            GameManager.State.CurrentMenuContext = MenuContext.LoadContext;
         }
     }
 }

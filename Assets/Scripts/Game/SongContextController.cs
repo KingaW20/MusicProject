@@ -1,7 +1,6 @@
 using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
-using UnityEngine.SceneManagement;
 
 namespace Scripts
 {
@@ -37,15 +36,18 @@ namespace Scripts
 
         void Update()
         {
-            answer.gameObject.SetActive(GameManager.CurrentGameContext == GameContext.SongContext);
+            answer.gameObject.SetActive(GameManager.State.CurrentGameContext == GameContext.SongContext);
 
-            if (GameManager.CurrentGameContext == GameContext.SongContext)
-            { 
-                wordNumberText.text = "Liczba s³ów: " + GameManager.AnswerWordNumber;
+            if (GameManager.State.CurrentGameContext == GameContext.SongContext)
+            {
+                if (GameManager.GameLoadedOnSong)
+                    UpdateViewState();
+
+                wordNumberText.text = "Liczba s³ów: " + GameManager.State.AnswerWordNumber;
 
                 if (songSource.isPlaying)
                 {
-                    SongManager.CurrentTime = songSource.time;
+                    SongManager.State.CurrentTime = songSource.time;
                     songLine.text = GameManager.JustChangedToSongContext ? "Tekst piosenki" : SongManager.GetCurrentLine();
                     nextSongLine.text = GameManager.JustChangedToSongContext ? "Tekst piosenki" : SongManager.GetNextLine();
                 }
@@ -74,21 +76,28 @@ namespace Scripts
                     songLine.text = "Tekst piosenki";
                     nextSongLine.text = "Tekst piosenki";
                 }
+
+                if (GameManager.State.EnteredAnswer != answer.text)
+                    GameManager.State.EnteredAnswer = answer.text;
             }
         }
 
         public void OnPlayAndPauseButtonClick()
         {
             if (songSource.clip == null)
-                songSource.clip = Resources.Load<AudioClip>(SongManager.SongSourcePath);
+                songSource.clip = Resources.Load<AudioClip>(SongManager.State.SongSourcePath);
 
             if (!songSource.isPlaying)
             {
                 songSource.Play();
                 GameManager.JustChangedToSongContext = false;
+                SongManager.State.IsPlaying = true;
             }
             else
+            {
                 songSource.Pause();
+                SongManager.State.IsPlaying = false;
+            }
 
             playImage.gameObject.SetActive(!songSource.isPlaying);
             pauseImage.gameObject.SetActive(songSource.isPlaying);
@@ -96,28 +105,28 @@ namespace Scripts
 
         public void OnCheckAnswerButtonClick()
         {
-            SongManager.IsAnswered = !SongManager.IsAnswered;
+            SongManager.State.IsAnswered = !SongManager.State.IsAnswered;
 
-            if (SongManager.IsAnswered)
+            if (SongManager.State.IsAnswered)
             {
                 bool correct = SongManager.IsAnswerCorrect(answer.text);
-                GameManager.AnswersCorrectness.Add(correct);
+                GameManager.State.AnswersCorrectness.Add(correct);
                 ChangeButtonColor(correct ? Constants.POSITIVE_COLOR : Constants.NEUTRAL_COLOR, correct);
                 if (!correct)
                     rightAnswerText.text = SongManager.GetCurrentSong().Answer;
             }
-            if (!SongManager.IsAnswered)
+            if (!SongManager.State.IsAnswered)
             {
                 songSource.clip = null;
-                SongManager.SongSourcePath = "";
-                GameManager.AnswerWordNumber++;
+                SongManager.State.SongSourcePath = "";
+                GameManager.State.AnswerWordNumber++;
                 answer.text = "";
                 ChangeButtonColor(Constants.NEUTRAL_COLOR, true);
-                if ((GameManager.AnswersCorrectness.Last() && GameManager.AnswersCorrectness.Count > Constants.CATEGORY_NUMBER)
-                    || !GameManager.AnswersCorrectness.Last())
-                    GameManager.CurrentGameContext = GameContext.EndContext;
-                else if (GameManager.AnswersCorrectness.Last())
-                    GameManager.CurrentGameContext = GameContext.MainContext;
+                if ((GameManager.State.AnswersCorrectness.Last() && GameManager.State.AnswersCorrectness.Count > Constants.CATEGORY_NUMBER)
+                    || !GameManager.State.AnswersCorrectness.Last())
+                    GameManager.State.CurrentGameContext = GameContext.EndContext;
+                else if (GameManager.State.AnswersCorrectness.Last())
+                    GameManager.State.CurrentGameContext = GameContext.MainContext;
             }
 
             SongContextButtonsInteractivityUpdate();
@@ -126,8 +135,29 @@ namespace Scripts
         public void OnContinueButtonClick()
         {
             bool correct = true;
-            GameManager.AnswersCorrectness[GameManager.AnswersCorrectness.Count - 1] = correct;
+            GameManager.State.AnswersCorrectness[GameManager.State.AnswersCorrectness.Count - 1] = correct;
             ChangeButtonColor(correct ? Constants.POSITIVE_COLOR : Constants.NEUTRAL_COLOR, correct);
+        }
+
+        private void UpdateViewState()
+        {
+            songSource.clip = Resources.Load<AudioClip>(SongManager.State.SongSourcePath);
+            songSource.time = SongManager.State.CurrentTime;
+
+            songLine.text = SongManager.GetCurrentLine();
+            nextSongLine.text = SongManager.GetNextLine();
+            answer.text = GameManager.State.EnteredAnswer;
+
+            GameManager.GameLoadedOnSong = false;
+
+            if (SongManager.State.IsAnswered)
+            {
+                bool correct = GameManager.State.AnswersCorrectness.Last();
+                ChangeButtonColor(correct ? Constants.POSITIVE_COLOR : Constants.NEUTRAL_COLOR, correct);
+                if (!correct)
+                    rightAnswerText.text = SongManager.GetCurrentSong().Answer;
+                SongContextButtonsInteractivityUpdate();
+            }
         }
 
         private void ChangeButtonColor(Color color, bool correct)
@@ -145,11 +175,11 @@ namespace Scripts
 
         private void SongContextButtonsInteractivityUpdate()
         {
-            checkButtonText.text = SongManager.IsAnswered ? "Wybierz kolejn¹ kategoriê" : "TAK TO LECIA£O!";
+            checkButtonText.text = SongManager.State.IsAnswered ? "Wybierz kolejn¹ kategoriê" : "TAK TO LECIA£O!";
             checkButtonText.text = 
-                GameManager.AnswersCorrectness.Last() && GameManager.AnswersCorrectness.Count > Constants.CATEGORY_NUMBER 
+                GameManager.State.AnswersCorrectness.Last() && GameManager.State.AnswersCorrectness.Count > Constants.CATEGORY_NUMBER 
                 ? "Wygra³eœ! Zakoñcz grê" : checkButtonText.text;
-            checkButtonText.text = GameManager.AnswersCorrectness.Last() ? checkButtonText.text : "Zakoñcz grê";
+            checkButtonText.text = GameManager.State.AnswersCorrectness.Last() ? checkButtonText.text : "Zakoñcz grê";
         }
     }
 }

@@ -21,7 +21,7 @@ namespace Scripts
         {
             foreach (var contextObject in contexts)
                 contextObject.SetActive(false);
-            contexts[(int)GameManager.CurrentGameContext].SetActive(true);
+            contexts[(int)GameManager.State.CurrentGameContext].SetActive(true);
 
             OptionsUpdate();
             PointsUpdate();
@@ -40,7 +40,7 @@ namespace Scripts
 
         public void OnSaveButtonClick()
         {
-
+            GameManager.SaveWindowShown = true;
         }
 
         public void OnExitButtonClick()
@@ -50,42 +50,40 @@ namespace Scripts
 
         public void OnHitButtonClick()
         {
-            SongManager.CurrentSongId = Constants.SONG_NUMBER;
-            GameManager.CurrentGameContext = GameContext.SongContext;
+            SongManager.State.CurrentSongId = Constants.SONG_NUMBER;
+            GameManager.State.CurrentGameContext = GameContext.SongContext;
             GameManager.JustChangedToSongContext = true;
-            SongManager.CurrentLineId = 0;
-            GameManager.HitSong.RandomizeAnswer();
-            SongManager.SongSourcePath = GameManager.HitSong.GetSongFilePathInResources();
+            SongManager.State.CurrentLineId = 0;
+            GameManager.State.HitSong.RandomizeAnswer();
+            SongManager.State.SongSourcePath = GameManager.State.HitSong.GetSongFilePathInResources();
         }
 
         private void OptionsUpdate()
         {
             optionsBox.SetActive(GameManager.OptionsShown);
-            optionsButton.interactable = !GameManager.HelpShown.Any(shown => shown == true) &&
-                (SongManager.IsAnswered || SongManager.CurrentTime <= 0);
-
-            //TODO: interactable = true if saving implemented
-            saveGameButton.interactable = false;
+            optionsButton.interactable = !GameManager.HelpShown.Any(shown => shown == true) && 
+                (GameManager.State.CurrentGameContext != GameContext.SongContext || SongManager.State.IsAnswered || !SongManager.State.IsPlaying);
+            saveGameButton.interactable = optionsButton.interactable;
         }
 
         private void PointsUpdate()
         {
-            for (int i = 0; i < GameManager.AnswersCorrectness.Count; i++)
-                points[i].gameObject.GetComponent<Image>().color = GameManager.AnswersCorrectness[i] ?
+            for (int i = 0; i < GameManager.State.AnswersCorrectness.Count; i++)
+                points[i].gameObject.GetComponent<Image>().color = GameManager.State.AnswersCorrectness[i] ?
                     Constants.POSITIVE_COLOR : Constants.NEGATIVE_COLOR;
         }
 
         private void MainInfoUpdate()
         {
-            mainInfoButton.interactable = GameManager.CurrentGameContext == GameContext.MainContext && GameManager.IsHitTime();
+            mainInfoButton.interactable = GameManager.State.CurrentGameContext == GameContext.MainContext && GameManager.IsHitTime();
 
-            switch (GameManager.CurrentGameContext)
+            switch (GameManager.State.CurrentGameContext)
             {
                 case GameContext.MainContext:
                     mainInfoText.text = "HIT ZA 50 000";
                     break;
                 case GameContext.CategoryContext:
-                    mainInfoText.text = SongManager.GetCategoryNameById(SongManager.CurrentCategoryId).ToUpper();
+                    mainInfoText.text = SongManager.GetCategoryNameById(SongManager.State.CurrentCategoryId).ToUpper();
                     break;
                 case GameContext.SongContext:
                     mainInfoText.text = SongManager.GetCurrentSong().Title.ToUpper();

@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -12,10 +10,10 @@ namespace Scripts
 
         void Update()
         {
-            if (GameManager.CurrentGameContext == GameContext.MainContext)
+            if (GameManager.State.CurrentGameContext == GameContext.MainContext)
             {
                 for (int id = 0; id < Constants.CATEGORY_NUMBER; id++)
-                    categoryButtons[id].interactable = !GameManager.ChoosedCategoryIds.Contains(id) && !GameManager.OptionsShown;
+                    categoryButtons[id].interactable = !GameManager.State.ChoosedCategoryIds.Contains(id) && !GameManager.OptionsShown;
                 for (int i = 0; i < Constants.CATEGORY_NUMBER; i++)
                     categoryTexts[i].text = SongManager.GetCategoryNameById(i).ToUpper();
             }
@@ -23,9 +21,9 @@ namespace Scripts
 
         public void OnCategoryShowButtonClick(int categoryId)
         {
-            GameManager.ChoosedCategoryIds.Add(categoryId);
-            SongManager.CurrentCategoryId = categoryId;
-            GameManager.CurrentGameContext = GameContext.CategoryContext;
+            GameManager.State.ChoosedCategoryIds.Add(categoryId);
+            SongManager.State.CurrentCategoryId = categoryId;
+            GameManager.State.CurrentGameContext = GameContext.CategoryContext;
         }
     }
 }

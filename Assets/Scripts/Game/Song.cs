@@ -1,4 +1,5 @@
 using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -6,15 +7,16 @@ using UnityEngine;
 
 namespace Scripts
 {
+    [Serializable]
     public class Song
     {
-        private string categoryName;
-        private string title;
-        private List<Line> lines;
-        private string answer;
-        private int answerLineId;
-        private string nextLine;
-        private float stopTime;
+        [SerializeField] private string categoryName;
+        [SerializeField] private string title;
+        [SerializeField] private List<Line> lines;
+        [SerializeField] private string answer;
+        [SerializeField] private int answerLineId;
+        [SerializeField] private string nextLine;
+        [SerializeField] private float stopTime;
 
         public string CategoryName { get => categoryName; }
         public string Title { get => title; }
@@ -45,6 +47,17 @@ namespace Scripts
             }
         }
 
+        public Song(Song s)
+        {
+            categoryName = s.CategoryName;
+            title = s.Title;
+            lines = s.Lines.Select(item => new Line(item)).ToList();
+            answer = s.Answer;
+            answerLineId = s.AnswerLineId;
+            nextLine = s.NextLine;
+            stopTime = s.StopTime;
+        }
+
         public string GetSongFilePathInResources()
         {
             return Path.Combine(categoryName, title);
@@ -65,14 +78,14 @@ namespace Scripts
                 this.answer += this.lines[answerLineId].Text.Replace("\n", " ") + " ";
                 answerWords = Line.GetTextWords(this.answer);
                 answerLineId++;
-            } while (answerWords.Length <= GameManager.AnswerWordNumber);
+            } while (answerWords.Length <= GameManager.State.AnswerWordNumber);
 
-            this.answer = string.Join(" ", Line.GetTextWordsPart(answerWords, GameManager.AnswerWordNumber));
+            this.answer = string.Join(" ", Line.GetTextWordsPart(answerWords, GameManager.State.AnswerWordNumber));
             Debug.Log("Czas: " + this.stopTime);
             Debug.Log("OdpowiedŸ: " + this.answer);
 
             string[] restLineAfterAnswerWords = Line.GetTextWordsPart(answerWords, 
-                answerWords.Length - GameManager.AnswerWordNumber, GameManager.AnswerWordNumber);
+                answerWords.Length - GameManager.State.AnswerWordNumber, GameManager.State.AnswerWordNumber);
             string[] lineAfterAnswerWords = Line.GetTextWords(this.lines[answerLineId].Text.Replace("\n", " "));
             string[] nextLineWords = restLineAfterAnswerWords.Concat(lineAfterAnswerWords).ToArray();
             this.nextLine = string.Join(" ", nextLineWords);

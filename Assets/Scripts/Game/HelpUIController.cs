@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
@@ -10,7 +8,8 @@ namespace Scripts
     {
         TwoWords,
         Change,
-        NextLine
+        NextLine,
+        None
     }
 
     public class HelpUIController : MonoBehaviour
@@ -34,7 +33,7 @@ namespace Scripts
         public void OnTwoWordsHelpButtonClick()
         {
             for (int i = 0; i < helpWordButtons.Length; i++)
-                helpWordButtons[i].gameObject.SetActive(i < GameManager.AnswerWordNumber);
+                helpWordButtons[i].gameObject.SetActive(i < GameManager.State.AnswerWordNumber);
             ShowHelp(Help.TwoWords);
         }
 
@@ -49,14 +48,14 @@ namespace Scripts
             {
                 foreach (var helpWordButton in helpWordButtons)
                     helpWordButton.interactable = false;
-                GameManager.HelpUsed[(int)Help.TwoWords] = true;
+                GameManager.State.HelpUsed[(int)Help.TwoWords] = true;
             }
         }
 
         public void OnChangeHelpButtonClick()
         {
             for (int id = 0; id < Constants.CATEGORY_NUMBER; id++)
-                categoryToChangeButtons[id].interactable = !GameManager.ChoosedCategoryIds.Contains(id);
+                categoryToChangeButtons[id].interactable = !GameManager.State.ChoosedCategoryIds.Contains(id);
             ShowHelp(Help.Change);
         }
 
@@ -65,15 +64,15 @@ namespace Scripts
             foreach (var cat in categoryToChangeButtons)
                 cat.interactable = false;
             categoryToChangeButtons[categoryId].gameObject.GetComponent<Image>().color = Constants.POSITIVE_COLOR;
-            GameManager.HelpUsed[(int)Help.Change] = true;
-            GameManager.SelectedCategories[categoryId] = GameManager.CategoryForChange;
+            GameManager.State.HelpUsed[(int)Help.Change] = true;
+            GameManager.State.SelectedCategories[categoryId] = GameManager.State.CategoryForChange;
         }
 
         public void OnNextLineHelpButtonClick()
         {
             nextLineText.text = SongManager.GetCurrentSong().NextLine;
             ShowHelp(Help.NextLine);
-            GameManager.HelpUsed[(int)Help.NextLine] = true;
+            GameManager.State.HelpUsed[(int)Help.NextLine] = true;
         }
 
         private void ShowHelp(Help help)
@@ -85,22 +84,22 @@ namespace Scripts
         private void HelpButtonsInteractivityUpdate()
         {
             for (int i = 0; i < Constants.HELP_NUMBER; i++)
-                helpUsedImages[i].SetActive(GameManager.HelpUsed[i] && !helpBoxes[i].activeSelf);
+                helpUsedImages[i].SetActive(GameManager.State.HelpUsed[i] && !helpBoxes[i].activeSelf);
 
             // if any of helps is shown set only button of this help interactable
             if (GameManager.HelpShown.Any(item => item == true))
             {
                 for (int i = 0; i < Constants.HELP_NUMBER; i++)
-                    helpButtons[i].interactable = GameManager.HelpShown[i] && GameManager.HelpUsed[i] && CanInteractWithHelp();
+                    helpButtons[i].interactable = GameManager.HelpShown[i] && GameManager.State.HelpUsed[i] && CanInteractWithHelp();
                 return;
             }
 
             // make buttons interactable based on context
-            switch(GameManager.CurrentGameContext)
+            switch(GameManager.State.CurrentGameContext)
             {
                 case (GameContext.MainContext):
                     helpButtons[(int)Help.TwoWords].interactable = false;
-                    helpButtons[(int)Help.Change].interactable = !GameManager.HelpUsed[(int)Help.Change] && CanInteractWithHelp();
+                    helpButtons[(int)Help.Change].interactable = !GameManager.State.HelpUsed[(int)Help.Change] && CanInteractWithHelp();
                     helpButtons[(int)Help.NextLine].interactable = false;
                     break;
                 case (GameContext.CategoryContext):
@@ -109,9 +108,9 @@ namespace Scripts
                     helpButtons[(int)Help.NextLine].interactable = false;
                     break;
                 case (GameContext.SongContext):
-                    helpButtons[(int)Help.TwoWords].interactable = !GameManager.HelpUsed[(int)Help.TwoWords] && CanInteractWithHelp();
+                    helpButtons[(int)Help.TwoWords].interactable = !GameManager.State.HelpUsed[(int)Help.TwoWords] && CanInteractWithHelp();
                     helpButtons[(int)Help.Change].interactable = false;
-                    helpButtons[(int)Help.NextLine].interactable = !GameManager.HelpUsed[(int)Help.NextLine] && CanInteractWithHelp();
+                    helpButtons[(int)Help.NextLine].interactable = !GameManager.State.HelpUsed[(int)Help.NextLine] && CanInteractWithHelp();
                     break;
             }
         }
@@ -124,7 +123,7 @@ namespace Scripts
 
         private bool CanInteractWithHelp()
         {
-            return !GameManager.OptionsShown && !SongManager.IsAnswered && SongManager.IsSongEnded() && !GameManager.IsHitTime();
+            return !GameManager.OptionsShown && !SongManager.State.IsAnswered && SongManager.IsSongEnded() && !GameManager.IsHitTime();
         }
     }
 }

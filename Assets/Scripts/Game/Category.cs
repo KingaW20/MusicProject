@@ -1,5 +1,4 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -7,11 +6,12 @@ using UnityEngine;
 
 namespace Scripts
 {
+    [Serializable]
     public class Category
     {
-        private string name;
-        private List<string> allSongTitles;
-        private List<Song> selectedSongs;
+        [SerializeField] private string name;
+        [SerializeField] private List<string> allSongTitles;
+        [SerializeField] private List<Song> selectedSongs;
 
         public string Name { get => name; }
         public List<string> AllSongTitles { get => allSongTitles; }
@@ -44,6 +44,13 @@ namespace Scripts
             {
                 Debug.Log($"Path {path} doesn't exist");
             }
+        }
+
+        public Category(Category c)
+        {
+            name = c.Name;
+            allSongTitles = c.AllSongTitles.ToList();
+            selectedSongs = c.SelectedSongs.Select(item => new Song(item)).ToList();
         }
     }
 }

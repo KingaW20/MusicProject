@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
@@ -17,21 +15,20 @@ namespace Scripts
 
         public void OnPointerEnter(PointerEventData eventData)
         {
-            string infoText = "";
-
-            if (GameManager.AnswersCorrectness.Count < GameManager.ChoosedCategoryIds.Count)
+            if (GameManager.ShowOnHover(additionalCondition: GameManager.State.AnswersCorrectness.Count < GameManager.State.ChoosedCategoryIds.Count))
             {
+                string infoText = "";
                 checkInfoBox.SetActive(true);
 
                 if (GetComponent<Button>().interactable)
                     infoText = "Sprawdü poprawnoúÊ odpowiedzi";
                 else if (SongManager.IsSongEnded())
-                    infoText = "Odpowiedü jest za d≥uga\nmaksymalna liczba s≥Ûw: " + GameManager.AnswerWordNumber;
+                    infoText = "Odpowiedü jest za d≥uga\nmaksymalna liczba s≥Ûw: " + GameManager.State.AnswerWordNumber;
                 else
                     infoText = "Sprawdzenie odpowiedzi bÍdzie moøliwe po przes≥uchaniu piosenki";
-            }
 
-            checkInfoBox.GetComponentInChildren<Text>().text = infoText;
+                checkInfoBox.GetComponentInChildren<Text>().text = infoText;
+            }
         }
 
         public void OnPointerDown(PointerEventData pointerEventData)

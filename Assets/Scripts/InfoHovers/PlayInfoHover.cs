@@ -1,5 +1,4 @@
-using System.Collections;
-using System.Collections.Generic;
+using Scripts;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
@@ -15,7 +14,7 @@ public class PlayInfoHover : MonoBehaviour, IPointerEnterHandler, IPointerExitHa
 
     public void OnPointerEnter(PointerEventData eventData)
     {
-        if (!this.gameObject.GetComponent<Button>().interactable)
+        if (GameManager.ShowOnHover(additionalCondition: !this.gameObject.GetComponent<Button>().interactable))
             playInfoBox.SetActive(true);
     }
 

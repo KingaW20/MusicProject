@@ -1,8 +1,5 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
-using UnityEngine.UI;
 
 namespace Scripts
 {
@@ -17,7 +14,7 @@ namespace Scripts
 
         public void OnPointerEnter(PointerEventData eventData)
         {
-            if (this.gameObject.activeSelf)
+            if (GameManager.ShowOnHover(additionalCondition: this.gameObject.activeSelf))
                 continueInfoBox.SetActive(true);
         }
 

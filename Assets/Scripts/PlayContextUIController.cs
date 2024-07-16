@@ -1,10 +1,8 @@
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
-using UnityEngine.Windows;
 
 namespace Scripts
 {
@@ -90,7 +88,7 @@ namespace Scripts
 
         public void OnBackButtonClick()
         {
-            GameManager.CurrentMenuContext = MenuContext.MainContext;
+            GameManager.State.CurrentMenuContext = MenuContext.MainContext;
         }
     }
 }

@@ -1,16 +1,15 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using Newtonsoft.Json.Linq;
 
 namespace Scripts
 {
+    [Serializable]
     public class Line
     {
-        private float startTime;
-        private float endTime;
-        private string text;
+        [SerializeField] private float startTime;
+        [SerializeField] private float endTime;
+        [SerializeField] private string text;
 
         public float StartTime { get => startTime; }
         public float EndTime { get => endTime; }
@@ -21,6 +20,13 @@ namespace Scripts
             this.startTime = float.Parse(lineDict["start"], System.Globalization.CultureInfo.InvariantCulture);
             this.endTime = float.Parse(lineDict["end"], System.Globalization.CultureInfo.InvariantCulture);
             this.text = lineDict["text"];
+        }
+
+        public Line(Line l)
+        {
+            startTime = l.StartTime;
+            endTime = l.EndTime;
+            text = l.Text;
         }
 
         public static string[] GetTextWords(string text)

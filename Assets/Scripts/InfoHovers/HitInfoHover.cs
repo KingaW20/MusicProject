@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
@@ -17,7 +15,8 @@ namespace Scripts
 
         public void OnPointerEnter(PointerEventData eventData)
         {
-            if (!this.gameObject.GetComponent<Button>().interactable && GameManager.CurrentGameContext == GameContext.MainContext)
+            if (GameManager.ShowOnHover(additionalCondition: 
+                !this.gameObject.GetComponent<Button>().interactable && GameManager.State.CurrentGameContext == GameContext.MainContext))
                 hitInfoBox.SetActive(true);
         }
 

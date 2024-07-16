@@ -4,21 +4,11 @@ namespace Scripts
 {
     public static class SongManager
     {
-        public static int CurrentCategoryId;
-        public static int CurrentSongId;
-        public static int CurrentLineId;
-        public static string SongSourcePath;
-        public static float CurrentTime;
-        public static bool IsAnswered;
+        public static SongState State;
 
         public static void Setup()
         {
-            CurrentCategoryId = 0;
-            CurrentSongId = 0;
-            CurrentTime = 0f;
-            CurrentLineId = 0;
-            SongSourcePath = "";
-            IsAnswered = false;
+            State = new SongState();
         }
 
         public static bool IsAnswerCorrect(string answer)
@@ -30,41 +20,41 @@ namespace Scripts
 
         public static string GetCategoryNameById(int id)
         {
-            if (GameManager.SelectedCategories.Count < Constants.CATEGORY_NUMBER)
+            if (GameManager.State.SelectedCategories.Count < Constants.CATEGORY_NUMBER)
                 return "";
-            return GameManager.SelectedCategories[id].Name;
+            return GameManager.State.SelectedCategories[id].Name;
         }
 
         public static string GetCurrentCatSongTitleById(int id)
         {
-            if (GameManager.SelectedCategories.Count < Constants.CATEGORY_NUMBER)
+            if (GameManager.State.SelectedCategories.Count < Constants.CATEGORY_NUMBER)
                 return "";
-            return GameManager.SelectedCategories[CurrentCategoryId].SelectedSongs[id].Title;
+            return GameManager.State.SelectedCategories[State.CurrentCategoryId].SelectedSongs[id].Title;
         }
 
         public static Song GetCurrentSong()
         {
-            if (GameManager.SelectedCategories.Count < Constants.CATEGORY_NUMBER)
+            if (GameManager.State.SelectedCategories.Count < Constants.CATEGORY_NUMBER)
                 return null;
-            if (CurrentSongId < Constants.SONG_NUMBER)
-                return GameManager.SelectedCategories[CurrentCategoryId].SelectedSongs[CurrentSongId];
+            if (State.CurrentSongId < Constants.SONG_NUMBER)
+                return GameManager.State.SelectedCategories[State.CurrentCategoryId].SelectedSongs[State.CurrentSongId];
             else
-                return GameManager.HitSong;
+                return GameManager.State.HitSong;
         }
         
         public static string GetCurrentLine()
         {
-            var line = GetCurrentSong().Lines[CurrentLineId];
+            var line = GetCurrentSong().Lines[State.CurrentLineId];
 
-            if (line.StartTime <= CurrentTime && CurrentTime < line.EndTime)
+            if (line.StartTime <= State.CurrentTime && State.CurrentTime < line.EndTime)
                 return line.Text;
-            else if (line.EndTime <= CurrentTime && CurrentLineId < GetCurrentSong().AnswerLineId - 1 &&
-                GetCurrentSong().Lines[CurrentLineId + 1].StartTime <= CurrentTime)
+            else if (line.EndTime <= State.CurrentTime && State.CurrentLineId < GetCurrentSong().AnswerLineId - 1 &&
+                GetCurrentSong().Lines[State.CurrentLineId + 1].StartTime <= State.CurrentTime)
             {
-                CurrentLineId++;
-                return GetCurrentSong().Lines[CurrentLineId].Text;
+                State.CurrentLineId++;
+                return GetCurrentSong().Lines[State.CurrentLineId].Text;
             }
-            else if (line.EndTime <= CurrentTime && CurrentLineId == GetCurrentSong().AnswerLineId - 1)
+            else if (line.EndTime <= State.CurrentTime && State.CurrentLineId == GetCurrentSong().AnswerLineId - 1)
                 return line.Text;
 
             return "...";
@@ -72,16 +62,16 @@ namespace Scripts
 
         public static string GetNextLine()
         {
-            var currentLine = GetCurrentSong().Lines[CurrentLineId];
-            if (currentLine.StartTime >= CurrentTime && CurrentLineId < GetCurrentSong().AnswerLineId)
+            var currentLine = GetCurrentSong().Lines[State.CurrentLineId];
+            if (currentLine.StartTime >= State.CurrentTime && State.CurrentLineId < GetCurrentSong().AnswerLineId)
                 return currentLine.Text.Replace("\n", " ");
 
-            var nextLineId = CurrentLineId + 1;
+            var nextLineId = State.CurrentLineId + 1;
             if (nextLineId < GetCurrentSong().AnswerLineId)
             {
                 var nextLine = GetCurrentSong().Lines[nextLineId];
 
-                if (nextLine.StartTime >= CurrentTime)
+                if (nextLine.StartTime >= State.CurrentTime)
                     return nextLine.Text.Replace("\n", " ");
                 else
                     return nextLineId < GetCurrentSong().AnswerLineId ? GetCurrentSong().Lines[nextLineId + 1].Text.Replace("\n", " ") : "...";
@@ -101,7 +91,7 @@ namespace Scripts
         {
             if (GetCurrentSong() == null)
                 return false;
-            return CurrentTime >= GetCurrentSong().StopTime;
+            return State.CurrentTime >= GetCurrentSong().StopTime;
         }
     }
 }

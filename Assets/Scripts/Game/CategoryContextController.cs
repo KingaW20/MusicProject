@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -12,7 +10,7 @@ namespace Scripts
 
         void Update()
         {
-            if (GameManager.CurrentGameContext == GameContext.CategoryContext)
+            if (GameManager.State.CurrentGameContext == GameContext.CategoryContext)
             {
                 foreach (var songBut in songButtons)
                     songBut.interactable = !GameManager.OptionsShown;
@@ -23,11 +21,11 @@ namespace Scripts
 
         public void OnSongShowButtonClick(int songId)
         {
-            SongManager.CurrentSongId = songId;
-            SongManager.CurrentLineId = 0;
+            SongManager.State.CurrentSongId = songId;
+            SongManager.State.CurrentLineId = 0;
             SongManager.GetCurrentSong().RandomizeAnswer();
-            SongManager.SongSourcePath = SongManager.GetCurrentSong().GetSongFilePathInResources();
-            GameManager.CurrentGameContext = GameContext.SongContext;
+            SongManager.State.SongSourcePath = SongManager.GetCurrentSong().GetSongFilePathInResources();
+            GameManager.State.CurrentGameContext = GameContext.SongContext;
             GameManager.JustChangedToSongContext = true;
         }
     }

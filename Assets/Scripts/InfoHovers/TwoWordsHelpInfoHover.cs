@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
@@ -17,32 +15,11 @@ namespace Scripts
 
         public void OnPointerEnter(PointerEventData eventData)
         {
-            if (!GameManager.HelpShown[(int)Help.TwoWords] && !GameManager.HelpUsed[(int)Help.TwoWords])
+            if (GameManager.ShowOnHover(helpType: Help.TwoWords))
             {
                 twoWordsHelpInfoBox.SetActive(true);
-                string infoText = "";
-
-                infoText = "Ko³o aktywne przed weryfikacj¹ odpowiedzi\nWska¿e treœæ 2 wybranych przez Ciebie wyrazów odpowiedzi";
-
-                //if (GetComponent<Button>().interactable)
-                //    infoText = "Wska¿e treœæ 2 wybranych przez Ciebie wyrazów odpowiedzi";
-                //else
-                //{
-                //    switch (GameManager.CurrentGameContext)
-                //    {
-                //        case GameContext.MainContext:
-                //            infoText = "Musisz wybraæ kategoriê oraz piosenkê, a ko³o bêdzie aktywne po przes³uchaniu piosenki";
-                //            break;
-                //        case GameContext.CategoryContext:
-                //            infoText = "Musisz wybraæ piosenkê, a ko³o bêdzie aktywne po przes³uchaniu piosenki";
-                //            break;
-                //        case GameContext.SongContext:
-                //            infoText = "Ko³o bêdzie aktywne po przes³uchaniu piosenki";
-                //            break;
-                //    }
-                //}
-
-                twoWordsHelpInfoBox.GetComponentInChildren<Text>().text = infoText;
+                twoWordsHelpInfoBox.GetComponentInChildren<Text>().text = 
+                    "Ko³o aktywne przed weryfikacj¹ odpowiedzi\nWska¿e treœæ 2 wybranych przez Ciebie wyrazów odpowiedzi";
             }
         }
 

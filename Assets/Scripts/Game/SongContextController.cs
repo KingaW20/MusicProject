@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
@@ -15,7 +13,9 @@ namespace Scripts
         [SerializeField] private Button mainInfoButton;
 
         [SerializeField] private GameObject songLineBackground;
+        [SerializeField] private GameObject nextSongLineBackground;
         [SerializeField] private Text songLine;
+        [SerializeField] private Text nextSongLine;
         [SerializeField] private InputField answer;
 
         [SerializeField] private Button playButton;
@@ -43,9 +43,13 @@ namespace Scripts
             { 
                 wordNumberText.text = "Liczba s³ów: " + GameManager.AnswerWordNumber;
 
-                SongManager.CurrentTime = songSource.time;
+                if (songSource.isPlaying)
+                {
+                    SongManager.CurrentTime = songSource.time;
+                    songLine.text = GameManager.JustChangedToSongContext ? "Tekst piosenki" : SongManager.GetCurrentLine();
+                    nextSongLine.text = GameManager.JustChangedToSongContext ? "Tekst piosenki" : SongManager.GetNextLine();
+                }
                 answer.interactable = SongManager.IsSongEnded();
-                songLine.text = SongManager.GetCurrentLine();
 
                 if (!SongManager.IsSongEnded())
                 {
@@ -63,6 +67,13 @@ namespace Scripts
                     else
                         checkButton.interactable = !GameManager.OptionsShown;
                 }
+
+                if (GameManager.JustChangedToSongContext)
+                {
+                    playButton.interactable = true;
+                    songLine.text = "Tekst piosenki";
+                    nextSongLine.text = "Tekst piosenki";
+                }
             }
         }
 
@@ -72,7 +83,10 @@ namespace Scripts
                 songSource.clip = Resources.Load<AudioClip>(SongManager.SongSourcePath);
 
             if (!songSource.isPlaying)
+            {
                 songSource.Play();
+                GameManager.JustChangedToSongContext = false;
+            }
             else
                 songSource.Pause();
 
@@ -99,12 +113,11 @@ namespace Scripts
                 GameManager.AnswerWordNumber++;
                 answer.text = "";
                 ChangeButtonColor(Constants.NEUTRAL_COLOR, true);
-                if ((GameManager.AnswersCorrectness.Last() && GameManager.AnswersCorrectness.Count > Constants.CATEGORY_NUMBER) 
+                if ((GameManager.AnswersCorrectness.Last() && GameManager.AnswersCorrectness.Count > Constants.CATEGORY_NUMBER)
                     || !GameManager.AnswersCorrectness.Last())
-                    SceneManager.LoadScene("Menu");
+                    GameManager.CurrentGameContext = GameContext.EndContext;
                 else if (GameManager.AnswersCorrectness.Last())
                     GameManager.CurrentGameContext = GameContext.MainContext;
-
             }
 
             SongContextButtonsInteractivityUpdate();
@@ -122,6 +135,7 @@ namespace Scripts
             this.background.sprite = correct ? basicBackground : redBackground;
             this.background.color = color;
             songLineBackground.GetComponent<Image>().color = color;
+            nextSongLineBackground.GetComponent<Image>().color = color;
             mainInfoButton.GetComponent<Image>().color = color;
             answer.image.color = color;
             playButton.GetComponent<Image>().color = color;

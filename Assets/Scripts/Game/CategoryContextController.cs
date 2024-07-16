@@ -28,6 +28,7 @@ namespace Scripts
             SongManager.GetCurrentSong().RandomizeAnswer();
             SongManager.SongSourcePath = SongManager.GetCurrentSong().GetSongFilePathInResources();
             GameManager.CurrentGameContext = GameContext.SongContext;
+            GameManager.JustChangedToSongContext = true;
         }
     }
 }

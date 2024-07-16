@@ -22,23 +22,26 @@ namespace Scripts
                 nextLineHelpInfoBox.SetActive(true);
                 string infoText = "";
 
-                if (GetComponent<Button>().interactable)
-                    infoText = "Wyœwietli treœæ kolejnej linii tekstu piosenki";
-                else
-                {
-                    switch (GameManager.CurrentGameContext)
-                    {
-                        case GameContext.MainContext:
-                            infoText = "Musisz wybraæ kategoriê oraz piosenkê, a ko³o bêdzie aktywne po przes³uchaniu piosenki";
-                            break;
-                        case GameContext.CategoryContext:
-                            infoText = "Musisz wybraæ piosenkê, a ko³o bêdzie aktywne po przes³uchaniu piosenki";
-                            break;
-                        case GameContext.SongContext:
-                            infoText = "Ko³o bêdzie aktywne po przes³uchaniu piosenki";
-                            break;
-                    }
-                }
+                infoText = "Ko³o aktywne przed weryfikacj¹ odpowiedzi\nWyœwietli treœæ kolejnej linii tekstu piosenki";
+
+
+                //if (GetComponent<Button>().interactable)
+                //    infoText = "Wyœwietli treœæ kolejnej linii tekstu piosenki";
+                //else
+                //{
+                //    switch (GameManager.CurrentGameContext)
+                //    {
+                //        case GameContext.MainContext:
+                //            infoText = "Musisz wybraæ kategoriê oraz piosenkê, a ko³o bêdzie aktywne po przes³uchaniu piosenki";
+                //            break;
+                //        case GameContext.CategoryContext:
+                //            infoText = "Musisz wybraæ piosenkê, a ko³o bêdzie aktywne po przes³uchaniu piosenki";
+                //            break;
+                //        case GameContext.SongContext:
+                //            infoText = "Ko³o bêdzie aktywne po przes³uchaniu piosenki";
+                //            break;
+                //    }
+                //}
 
                 nextLineHelpInfoBox.GetComponentInChildren<Text>().text = infoText;
             }

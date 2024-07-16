@@ -1,9 +1,4 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using UnityEngine;
 
 namespace Scripts
 {
@@ -60,9 +55,39 @@ namespace Scripts
         public static string GetCurrentLine()
         {
             var line = GetCurrentSong().Lines[CurrentLineId];
-            if (line.EndTime <= CurrentTime && CurrentLineId < GetCurrentSong().AnswerLineId - 1)
+
+            if (line.StartTime <= CurrentTime && CurrentTime < line.EndTime)
+                return line.Text;
+            else if (line.EndTime <= CurrentTime && CurrentLineId < GetCurrentSong().AnswerLineId - 1 &&
+                GetCurrentSong().Lines[CurrentLineId + 1].StartTime <= CurrentTime)
+            {
                 CurrentLineId++;
-            return GetCurrentSong().Lines[CurrentLineId].Text;
+                return GetCurrentSong().Lines[CurrentLineId].Text;
+            }
+            else if (line.EndTime <= CurrentTime && CurrentLineId == GetCurrentSong().AnswerLineId - 1)
+                return line.Text;
+
+            return "...";
+        }
+
+        public static string GetNextLine()
+        {
+            var currentLine = GetCurrentSong().Lines[CurrentLineId];
+            if (currentLine.StartTime >= CurrentTime && CurrentLineId < GetCurrentSong().AnswerLineId)
+                return currentLine.Text.Replace("\n", " ");
+
+            var nextLineId = CurrentLineId + 1;
+            if (nextLineId < GetCurrentSong().AnswerLineId)
+            {
+                var nextLine = GetCurrentSong().Lines[nextLineId];
+
+                if (nextLine.StartTime >= CurrentTime)
+                    return nextLine.Text.Replace("\n", " ");
+                else
+                    return nextLineId < GetCurrentSong().AnswerLineId ? GetCurrentSong().Lines[nextLineId + 1].Text.Replace("\n", " ") : "...";
+            }
+
+            return "...";
         }
 
         public static string GetWordFromCurrentSongAnswerById(int wordId)

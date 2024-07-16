@@ -22,10 +22,12 @@ namespace Scripts
                 changeHelpInfoBox.SetActive(true);
                 string infoText = "";
 
-                if (GetComponent<Button>().interactable)
-                    infoText = "Zamieni wybran¹ przez Ciebie kategoriê\nz inn¹ losowo wybran¹";
-                else if (GameManager.CurrentGameContext != GameContext.MainContext)
-                    infoText = "Ko³o bêdzie aktywne podczas wybierania kategorii";
+                infoText = "Ko³o aktywne podczas wybierania kategorii\nZamieni wybran¹ przez Ciebie kategoriê\nz inn¹ losowo wybran¹";
+
+                //if (GetComponent<Button>().interactable)
+                //    infoText = "Zamieni wybran¹ przez Ciebie kategoriê\nz inn¹ losowo wybran¹";
+                //else if (GameManager.CurrentGameContext != GameContext.MainContext)
+                //    infoText = "Ko³o bêdzie aktywne podczas wybierania kategorii";
 
                 changeHelpInfoBox.GetComponentInChildren<Text>().text = infoText;
             }

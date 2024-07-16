@@ -18,7 +18,8 @@ namespace Scripts
     {
         MainContext,
         CategoryContext,
-        SongContext
+        SongContext,
+        EndContext
     }
 
     public static class Constants
@@ -43,6 +44,7 @@ namespace Scripts
         public static MenuContext CurrentMenuContext;
         public static GameContext CurrentGameContext;
         public static bool OptionsShown;
+        public static bool JustChangedToSongContext;
 
         //songs
         public static List<string> AllCategoryNames;
@@ -65,6 +67,7 @@ namespace Scripts
             ChoosedCategoryIds = new();
             CurrentMenuContext = MenuContext.MainContext;
             CurrentGameContext = GameContext.MainContext;
+            JustChangedToSongContext = false;
             OptionsShown = false;
 
             ReadCategories();
@@ -95,7 +98,7 @@ namespace Scripts
 
             string[] categoriesPath = Directory.GetDirectories(Constants.CATEGORIES_PATH);
             string[] selectedCategoriesPath = categoriesPath.Where(catPath => AllCategoryNames.Contains(Path.GetFileName(catPath)))
-                .OrderBy(cat => GameManager.Rand.Next()).Take(Constants.CATEGORY_NUMBER).ToArray();
+                .OrderBy(cat => Rand.Next()).Take(Constants.CATEGORY_NUMBER).ToArray();
             SelectedCategories.AddRange(selectedCategoriesPath.Select(categoryPath => new Category(categoryPath)).ToList());
 
             CategoryForChange = GetRandomCategoryFromRest();

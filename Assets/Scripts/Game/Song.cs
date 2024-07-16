@@ -1,7 +1,4 @@
 using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -50,14 +47,14 @@ namespace Scripts
 
         public string GetSongFilePathInResources()
         {
-            return Path.Combine(this.categoryName, this.title);
+            return Path.Combine(categoryName, title);
         }
 
         public void RandomizeAnswer()
         {
-            int max = lines.Count - Constants.BLOCK_LINES_NUMBER;
-            int min = lines.Count > 2 * Constants.BLOCK_LINES_NUMBER ? 
-                Constants.BLOCK_LINES_NUMBER : (lines.Count -  Constants.BLOCK_LINES_NUMBER) / 2;
+            int max = this.lines.Count - Constants.BLOCK_LINES_NUMBER;
+            int min = this.lines.Count > 2 * Constants.BLOCK_LINES_NUMBER ? 
+                Constants.BLOCK_LINES_NUMBER : (this.lines.Count -  Constants.BLOCK_LINES_NUMBER) / 2;
             int answerLineId = GameManager.Rand.Next(min, max);
             this.answerLineId = answerLineId;
             this.stopTime = this.lines[answerLineId].StartTime;
@@ -65,7 +62,7 @@ namespace Scripts
 
             do
             {
-                this.answer += this.lines[answerLineId].Text + " ";
+                this.answer += this.lines[answerLineId].Text.Replace("\n", " ") + " ";
                 answerWords = Line.GetTextWords(this.answer);
                 answerLineId++;
             } while (answerWords.Length <= GameManager.AnswerWordNumber);
@@ -76,7 +73,7 @@ namespace Scripts
 
             string[] restLineAfterAnswerWords = Line.GetTextWordsPart(answerWords, 
                 answerWords.Length - GameManager.AnswerWordNumber, GameManager.AnswerWordNumber);
-            string[] lineAfterAnswerWords = Line.GetTextWords(this.lines[answerLineId].Text);
+            string[] lineAfterAnswerWords = Line.GetTextWords(this.lines[answerLineId].Text.Replace("\n", " "));
             string[] nextLineWords = restLineAfterAnswerWords.Concat(lineAfterAnswerWords).ToArray();
             this.nextLine = string.Join(" ", nextLineWords);
             Debug.Log("Kolejna linijka: " + this.nextLine);

@@ -69,8 +69,14 @@ namespace Scripts
         private void PointsUpdate()
         {
             for (int i = 0; i < GameManager.State.AnswersCorrectness.Count; i++)
-                points[i].gameObject.GetComponent<Image>().color = GameManager.State.AnswersCorrectness[i] ?
-                    Constants.POSITIVE_COLOR : Constants.NEGATIVE_COLOR;
+            {
+                points[i].gameObject.GetComponent<Image>().color = GameManager.State.AnswersCorrectness[i] switch
+                {
+                    CorrectnessType.Right => Constants.POSITIVE_COLOR,
+                    CorrectnessType.AlmostRight => Constants.ALMOST_RIGHT_ANSWER_COLOR,
+                    CorrectnessType.Wrong => Constants.NEGATIVE_COLOR
+                };
+            }
         }
 
         private void MainInfoUpdate()

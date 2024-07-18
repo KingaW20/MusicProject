@@ -57,7 +57,7 @@ namespace Scripts
 
         public void OnLoadSongButtonClick()
         {
-            ClearLog();
+            //ClearLog();
             
             //load song lines from json line
             string path = Path.Combine(Application.dataPath, "Resources", categoryName, songTitle + ".json");
@@ -101,6 +101,8 @@ namespace Scripts
             Debug.Log("Kolejna linijka: " + nextLine);
         }
 
+        //uncomment if you want to clear logs in Unity Editor
+        /*
         public void ClearLog()
         {
             var assembly = Assembly.GetAssembly(typeof(UnityEditor.Editor));
@@ -108,5 +110,6 @@ namespace Scripts
             var method = type.GetMethod("Clear");
             method.Invoke(new object(), null);
         }
+        */
     }
 }

@@ -109,8 +109,8 @@ namespace Scripts
 
             if (SongManager.State.IsAnswered)
             {
-                bool correct = SongManager.IsAnswerCorrect(answer.text);
-                GameManager.State.AnswersCorrectness.Add(correct);
+                var correct = SongManager.IsAnswerCorrect(answer.text);
+                GameManager.State.AnswersCorrectness.Add(correct ? CorrectnessType.Right : CorrectnessType.Wrong);
                 ChangeButtonColor(correct ? Constants.POSITIVE_COLOR : Constants.NEUTRAL_COLOR, correct);
                 if (!correct)
                     rightAnswerText.text = SongManager.GetCurrentSong().Answer;
@@ -122,10 +122,10 @@ namespace Scripts
                 GameManager.State.AnswerWordNumber++;
                 answer.text = "";
                 ChangeButtonColor(Constants.NEUTRAL_COLOR, true);
-                if ((GameManager.State.AnswersCorrectness.Last() && GameManager.State.AnswersCorrectness.Count > Constants.CATEGORY_NUMBER)
-                    || !GameManager.State.AnswersCorrectness.Last())
+                bool lastCorrect = GameManager.State.AnswersCorrectness.Last() != CorrectnessType.Wrong;
+                if ((lastCorrect && GameManager.State.AnswersCorrectness.Count > Constants.CATEGORY_NUMBER) || !lastCorrect)
                     GameManager.State.CurrentGameContext = GameContext.EndContext;
-                else if (GameManager.State.AnswersCorrectness.Last())
+                else if (lastCorrect)
                     GameManager.State.CurrentGameContext = GameContext.MainContext;
             }
 
@@ -134,9 +134,8 @@ namespace Scripts
 
         public void OnContinueButtonClick()
         {
-            bool correct = true;
-            GameManager.State.AnswersCorrectness[GameManager.State.AnswersCorrectness.Count - 1] = correct;
-            ChangeButtonColor(correct ? Constants.POSITIVE_COLOR : Constants.NEUTRAL_COLOR, correct);
+            GameManager.State.AnswersCorrectness[GameManager.State.AnswersCorrectness.Count - 1] = CorrectnessType.AlmostRight;
+            ChangeButtonColor(Constants.POSITIVE_COLOR, true);
         }
 
         private void UpdateViewState()
@@ -152,7 +151,7 @@ namespace Scripts
 
             if (SongManager.State.IsAnswered)
             {
-                bool correct = GameManager.State.AnswersCorrectness.Last();
+                bool correct = GameManager.State.AnswersCorrectness.Last() != CorrectnessType.Wrong;
                 ChangeButtonColor(correct ? Constants.POSITIVE_COLOR : Constants.NEUTRAL_COLOR, correct);
                 if (!correct)
                     rightAnswerText.text = SongManager.GetCurrentSong().Answer;
@@ -175,11 +174,16 @@ namespace Scripts
 
         private void SongContextButtonsInteractivityUpdate()
         {
-            checkButtonText.text = SongManager.State.IsAnswered ? "Wybierz kolejn¹ kategoriê" : "TAK TO LECIA£O!";
-            checkButtonText.text = 
-                GameManager.State.AnswersCorrectness.Last() && GameManager.State.AnswersCorrectness.Count > Constants.CATEGORY_NUMBER 
-                ? "Wygra³eœ! Zakoñcz grê" : checkButtonText.text;
-            checkButtonText.text = GameManager.State.AnswersCorrectness.Last() ? checkButtonText.text : "Zakoñcz grê";
+            var correct = GameManager.State.AnswersCorrectness.Last() != CorrectnessType.Wrong;
+
+            if (SongManager.State.IsAnswered)
+                checkButtonText.text = "Wybierz kolejn¹ kategoriê";
+            else if (correct && GameManager.State.AnswersCorrectness.Count > Constants.CATEGORY_NUMBER)
+                checkButtonText.text = "Wygra³eœ! Zakoñcz grê";
+            else if (!correct)
+                checkButtonText.text = "Zakoñcz grê";
+            else
+                checkButtonText.text = "TAK TO LECIA£O!";
         }
     }
 }

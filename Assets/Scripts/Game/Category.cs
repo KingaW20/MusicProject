@@ -1,6 +1,6 @@
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using UnityEngine;
 
@@ -17,32 +17,25 @@ namespace Scripts
         public List<string> AllSongTitles { get => allSongTitles; }
         public List<Song> SelectedSongs { get => selectedSongs; }
 
-        public Category(string path)
+        public Category(string name)
         {
-            this.name = Path.GetFileName(path);
+            this.name = name;
             this.allSongTitles = new();
             this.selectedSongs = new();
 
-            if (Directory.Exists(path))
+            var songsJson = Resources.Load<TextAsset>(name + "/" + Constants.SONGS_FILENAME);
+            if (songsJson != null)
             {
-                string[] files = Directory.GetFiles(path);
-                var songFileNames = files.Where(file => file.EndsWith(".json", StringComparison.OrdinalIgnoreCase)).ToArray();
-                var selectedSongFileNames = songFileNames.OrderBy(song => GameManager.Rand.Next()).Take(Constants.SONG_NUMBER).ToArray();
+                var jsonData = JsonConvert.DeserializeObject<Dictionary<string, List<string>>>(songsJson.text);
+                this.allSongTitles = jsonData[Constants.SONGS_FILENAME];
+                var selectedSongTitles = this.allSongTitles.OrderBy(songTitle => GameManager.Rand.Next()).Take(Constants.SONG_NUMBER).ToList();
 
-                foreach (var songFile in songFileNames)
-                {
-                    var songTitle = Path.GetFileNameWithoutExtension(songFile);
-                    this.allSongTitles.Add(songTitle);
-                    if (selectedSongFileNames.Contains(songFile))
-                    {
-                        string songJson = File.ReadAllText(Path.Combine(path, songFile));
-                        this.selectedSongs.Add(new Song(this.name, songTitle, songJson));
-                    }
-                }
+                foreach (var songTitle in selectedSongTitles)
+                    this.selectedSongs.Add(new Song(this.name, songTitle));
             }
             else
             {
-                Debug.Log($"Path {path} doesn't exist");
+                Debug.Log($"Nie ma pliku {name}/{Constants.SONGS_FILENAME}");
             }
         }
 

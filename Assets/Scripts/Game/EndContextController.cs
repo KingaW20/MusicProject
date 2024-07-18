@@ -17,7 +17,7 @@ public class EndContextController : MonoBehaviour
     {
         if (GameManager.State.CurrentGameContext == GameContext.EndContext)
         {
-            var win = GameManager.State.AnswersCorrectness.Last();
+            var win = GameManager.State.AnswersCorrectness.Last() != CorrectnessType.Wrong;
 
             endInfoLine.text = win ? "Koniec gry\n WYGRA£EŒ 50 000\nGratulacje!!!" : "Koniec gry\n PRZEGRA£EŒ";
             endInfoLine.color = win ? Constants.POSITIVE_COLOR : Constants.NEGATIVE_COLOR;

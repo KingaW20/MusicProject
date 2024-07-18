@@ -23,13 +23,13 @@ namespace Scripts
         {
             this.page = 0;
             this.pageSize = 12;
-            this.categoriesChoosed = GameManager.AllCategoryNames.ToDictionary(cat => cat, val => true);
+            this.categoriesChoosed = GameManager.CategoryNames.ToDictionary(cat => cat, val => true);
             UpdateContent();
         }
 
         public void UpdateContent()
         {
-            this.currentCategoriesShown = GameManager.AllCategoryNames.Skip(this.pageSize * this.page).Take(this.pageSize).ToList();
+            this.currentCategoriesShown = GameManager.CategoryNames.Skip(this.pageSize * this.page).Take(this.pageSize).ToList();
 
             for (int i = 0; i < this.currentCategoriesShown.Count; i++)
                 categoryNames[i].text = this.currentCategoriesShown[i][0].ToString().ToUpper() + this.currentCategoriesShown[i].Substring(1);
@@ -47,14 +47,14 @@ namespace Scripts
 
         public void OnCheckAllButtonClick()
         {
-            this.categoriesChoosed = GameManager.AllCategoryNames.ToDictionary(cat => cat, val => true);
+            this.categoriesChoosed = GameManager.CategoryNames.ToDictionary(cat => cat, val => true);
             for (int i = 0; i < this.pageSize; i++)
                 toggles[i].isOn = this.categoriesChoosed.ElementAtOrDefault(i).Value;
         }
 
         public void OnUnCheckAllButtonClick()
         {
-            this.categoriesChoosed = GameManager.AllCategoryNames.ToDictionary(cat => cat, val => false);
+            this.categoriesChoosed = GameManager.CategoryNames.ToDictionary(cat => cat, val => false);
             for (int i = 0; i < this.pageSize; i++)
                 toggles[i].isOn = this.categoriesChoosed.ElementAtOrDefault(i).Value;
         }
@@ -81,7 +81,7 @@ namespace Scripts
 
         public void OnPlayButtonClick()
         {
-            GameManager.AllCategoryNames = this.categoriesChoosed.Where(pair => pair.Value == true).Select(pair => pair.Key).ToList();
+            GameManager.CategoryNames = this.categoriesChoosed.Where(pair => pair.Value == true).Select(pair => pair.Key).ToList();
             GameManager.LoadChoosedCategories();
             SceneManager.LoadScene("Game");
         }

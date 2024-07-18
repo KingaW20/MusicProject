@@ -26,17 +26,21 @@ namespace Scripts
         public string NextLine { get => nextLine; }
         public float StopTime { get => stopTime; }
 
-        public Song(string categoryName, string title, string songJsons)
+        public Song(string categoryName, string title)
         {
             this.categoryName = categoryName;
             this.title = title;
             this.lines = new();
             this.answer = "";
+        }
 
+        public Song ReadSong()
+        {
+            var songFile = Resources.Load<TextAsset>(this.categoryName + "/" + this.Title);
             try
             {
-                var songsDicts = JsonConvert.DeserializeObject<Dictionary<string, string>[]>(songJsons);
-                foreach (var songDict in songsDicts)
+                var songDicts = JsonConvert.DeserializeObject<Dictionary<string, string>[]>(songFile.text);
+                foreach (var songDict in songDicts)
                 {
                     this.lines.Add(new Line(songDict));
                 }
@@ -45,6 +49,8 @@ namespace Scripts
             {
                 Debug.Log("Incorrect format of JSON song file: " + ex.Message);
             }
+
+            return this;
         }
 
         public Song(Song s)

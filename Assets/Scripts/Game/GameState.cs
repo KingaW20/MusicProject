@@ -18,7 +18,7 @@ public class GameState
 
     //answering
     [SerializeField] public int AnswerWordNumber;
-    [SerializeField] public List<bool> AnswersCorrectness;
+    [SerializeField] public List<CorrectnessType> AnswersCorrectness;
 
     //help data
     [SerializeField] public bool[] HelpUsed;

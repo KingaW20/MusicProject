@@ -1,8 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.IO;
 using UnityEngine;
+using Newtonsoft.Json;
 
 namespace Scripts
 {
@@ -23,9 +23,19 @@ namespace Scripts
         EndContext
     }
 
+    [Serializable]
+    public enum CorrectnessType
+    {
+        Right,
+        AlmostRight,
+        Wrong
+    }
+
     public static class Constants
     {
-        public static string CATEGORIES_PATH = Path.Combine(Application.dataPath, "Resources");
+        public static string CATEGORIES_FILENAME = "categories";
+        public static string SONGS_FILENAME = "songs";
+
         public const int CATEGORY_NUMBER = 7;
         public const int SONG_NUMBER = 2;
         public const int HELP_NUMBER = 3;
@@ -36,6 +46,7 @@ namespace Scripts
 
         public static Color POSITIVE_COLOR = new Color(0f, 1f, 0f);
         public static Color NEGATIVE_COLOR = new Color(1f, 0f, 0f);
+        public static Color ALMOST_RIGHT_ANSWER_COLOR = new Color(0f, 0f, 1f);
         public static Color NEUTRAL_COLOR = new Color(1f, 1f, 1f);
         public static Color WHITE = new Color(1f, 1f, 1f, 1f);
         public static Color WHITE_LITTLE_TRANSPARENT = new Color(1f, 1f, 1f, 0.85f);
@@ -52,7 +63,7 @@ namespace Scripts
         public static bool GameLoadedOnSong;
 
         //songs
-        public static List<string> AllCategoryNames;
+        public static List<string> CategoryNames;
 
         //help data
         public static int ChoosedHelpWordsNumber;
@@ -75,24 +86,25 @@ namespace Scripts
                 HelpShown[i] = false;
         }
 
+        /// <summary>
+        /// Read all categories from file "categories" in folder "Resources"
+        /// </summary>
         private static void ReadCategories()
         {
-            var path = Constants.CATEGORIES_PATH;
-            AllCategoryNames = new();
-
-            string[] categoriesPath = Directory.GetDirectories(Constants.CATEGORIES_PATH);
-            AllCategoryNames.AddRange(categoriesPath.Select(categoryPath => Path.GetFileName(categoryPath)).ToList());
+            CategoryNames = new();
+            TextAsset categoriesJson = Resources.Load<TextAsset>(Constants.CATEGORIES_FILENAME);
+            if (categoriesJson != null)
+            {
+                Dictionary<string, List<string>> jsonData = JsonConvert.DeserializeObject<Dictionary<string, List<string>>>(categoriesJson.text);
+                CategoryNames = jsonData[Constants.CATEGORIES_FILENAME];
+            }
         }
 
         public static void LoadChoosedCategories()
         {
-            var path = Constants.CATEGORIES_PATH;
             State.SelectedCategories = new();
-
-            string[] categoriesPath = Directory.GetDirectories(Constants.CATEGORIES_PATH);
-            string[] selectedCategoriesPath = categoriesPath.Where(catPath => AllCategoryNames.Contains(Path.GetFileName(catPath)))
-                .OrderBy(cat => Rand.Next()).Take(Constants.CATEGORY_NUMBER).ToArray();
-            State.SelectedCategories.AddRange(selectedCategoriesPath.Select(categoryPath => new Category(categoryPath)).ToList());
+            string[] selectedCategoryNames = CategoryNames.OrderBy(cat => Rand.Next()).Take(Constants.CATEGORY_NUMBER).ToArray();
+            State.SelectedCategories.AddRange(selectedCategoryNames.Select(categoryName => new Category(categoryName)).ToList());
 
             State.CategoryForChange = GetRandomCategoryFromRest();
             State.HitSong = ChooseHitSong();
@@ -112,39 +124,40 @@ namespace Scripts
 
         private static Category GetRandomCategoryFromRest()
         {
-            var restCategories = AllCategoryNames.Where(catName => !State.SelectedCategories.Any(cat => cat.Name == catName)).ToList();
+            var restCategories = CategoryNames.Where(catName => !State.SelectedCategories.Any(cat => cat.Name == catName)).ToList();
             var catName = restCategories.OrderBy(cat => Rand.Next()).FirstOrDefault();
-            return new Category(Path.Combine(Constants.CATEGORIES_PATH, catName));
+            return new Category(catName);
         }
 
         private static Song ChooseHitSong()
         {
-            var mainPath = Constants.CATEGORIES_PATH;
-
-            List<string> songPaths = new();
-            foreach (var categoryName in AllCategoryNames)
+            List<(string category, string title)> restSongs = new();
+            foreach (var categoryName in CategoryNames)
             {
-                string path = Path.Combine(mainPath, categoryName);
-                var songFileNames = Directory.GetFiles(path)
-                    .Where(file => file.EndsWith(".json", StringComparison.OrdinalIgnoreCase)).ToArray();
-                foreach (var songFileName in songFileNames)
+                var songsJson = Resources.Load<TextAsset>(categoryName + "/" + Constants.SONGS_FILENAME);
+                var jsonData = JsonConvert.DeserializeObject<Dictionary<string, List<string>>>(songsJson.text);
+                var songTitles = jsonData[Constants.SONGS_FILENAME];
+
+                foreach (var songTitle in songTitles)
                 {
-                    var songTitle = Path.GetFileNameWithoutExtension(songFileName);
                     if (State.SelectedCategories.Exists(cat => cat.Name == categoryName))
+                    {
                         if (IsSongToChoose(songTitle, categoryName))
-                            songPaths.Add(Path.Combine(path, songFileName));
+                            restSongs.Add((categoryName, songTitle));
+                    }
                     else if (State.CategoryForChange.Name == categoryName)
+                    {
                         if (IsSongToChooseFromCategoryToChoose(songTitle))
-                            songPaths.Add(Path.Combine(path, songFileName));
+                            restSongs.Add((categoryName, songTitle));
+                    }
                     else
-                        songPaths.Add(Path.Combine(path, songFileName));
+                        restSongs.Add((categoryName, songTitle));
                 }
             }
 
-            var hitSongPath = songPaths.OrderBy(song => Rand.Next()).FirstOrDefault();
-            var songJson = File.ReadAllText(hitSongPath);
-            var hitCategoryName = new DirectoryInfo(Path.GetDirectoryName(hitSongPath)).Name;
-            return new Song(hitCategoryName, Path.GetFileNameWithoutExtension(hitSongPath), songJson);
+            var hitSong = restSongs.OrderBy(song => Rand.Next()).FirstOrDefault();
+            var hitSongFile = Resources.Load<TextAsset>(hitSong.category + "/" + hitSong.title);
+            return new Song(hitSong.category, hitSong.title);
         }
 
         private static bool IsSongToChoose(string songTitle, string categoryName)

@@ -27,5 +27,10 @@ namespace Scripts
         {
             GameManager.State.CurrentMenuContext = MenuContext.LoadContext;
         }
+
+        public void OnExitButtonClick()
+        {
+            Application.Quit();
+        }
     }
 }

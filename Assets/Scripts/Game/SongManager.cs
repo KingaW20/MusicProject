@@ -36,7 +36,7 @@ namespace Scripts
         {
             if (GameManager.State.SelectedCategories.Count < Constants.CATEGORY_NUMBER)
                 return null;
-            if (State.CurrentSongId < Constants.SONG_NUMBER)
+            if (State.CurrentSongId < Constants.SONG_NUMBER && State.CurrentSongId >= 0)
                 return GameManager.State.SelectedCategories[State.CurrentCategoryId].SelectedSongs[State.CurrentSongId].ReadSong();
             else
                 return GameManager.State.HitSong.ReadSong();

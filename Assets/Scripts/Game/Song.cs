@@ -12,7 +12,7 @@ namespace Scripts
     {
         [SerializeField] private string categoryName;
         [SerializeField] private string title;
-        [SerializeField] private List<Line> lines;
+        [NonSerialized] private List<Line> lines;
         [SerializeField] private string answer;
         [SerializeField] private int answerLineId;
         [SerializeField] private string nextLine;
@@ -36,6 +36,7 @@ namespace Scripts
 
         public Song ReadSong()
         {
+            this.lines = new();
             var songFile = Resources.Load<TextAsset>(this.categoryName + "/" + this.Title);
             try
             {
@@ -57,7 +58,7 @@ namespace Scripts
         {
             categoryName = s.CategoryName;
             title = s.Title;
-            lines = s.Lines.Select(item => new Line(item)).ToList();
+            //lines = s.Lines.Select(item => new Line(item)).ToList();
             answer = s.Answer;
             answerLineId = s.AnswerLineId;
             nextLine = s.NextLine;

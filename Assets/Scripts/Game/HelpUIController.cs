@@ -123,7 +123,9 @@ namespace Scripts
 
         private bool CanInteractWithHelp()
         {
-            return !GameManager.OptionsShown && !SongManager.State.IsAnswered && SongManager.IsSongEnded() && !GameManager.IsHitTime();
+            return !GameManager.OptionsShown && 
+                (GameManager.State.CurrentGameContext != GameContext.SongContext || (!SongManager.State.IsAnswered && SongManager.IsSongEnded())) &&
+                !GameManager.IsHitTime();
         }
     }
 }

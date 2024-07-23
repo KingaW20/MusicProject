@@ -17,6 +17,15 @@ namespace Scripts
         [SerializeField] private Button optionsButton;
         [SerializeField] private Button saveGameButton;
 
+        private void Start()
+        {
+            foreach (var id in Constants.GUARANTEED_SUM_IDS)
+                points[id].transform.localScale = new Vector3(1.2f, 1f, 1f);
+
+            for (int i = 0; i < Constants.CATEGORY_NUMBER + 1; i++)
+                points[i].GetComponentInChildren<Text>().text = Constants.SUMS[i].ToString();
+        }
+
         void Update()
         {
             foreach (var contextObject in contexts)

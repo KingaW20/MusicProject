@@ -20,6 +20,11 @@ public class EndContextController : MonoBehaviour
             var win = GameManager.State.AnswersCorrectness.Last() != CorrectnessType.Wrong;
 
             endInfoLine.text = win ? "Koniec gry\n WYGRA£EŒ 50 000\nGratulacje!!!" : "Koniec gry\n PRZEGRA£EŒ";
+            foreach(var gs in Constants.GUARANTEED_SUM_IDS)
+            {
+                if (GameManager.State.AnswersCorrectness.Select(c => c != CorrectnessType.Wrong).Count() >= gs + 1)
+                    endInfoLine.text = $"Koniec gry\n Wygra³eœ sumê gwarantowan¹ {Constants.SUMS[gs]}\nGratulacje!!!";
+            }
             endInfoLine.color = win ? Constants.POSITIVE_COLOR : Constants.NEGATIVE_COLOR;
             background.sprite = win ? basicBackground : redBackground;
             background.color = win ? Constants.POSITIVE_COLOR : Constants.NEGATIVE_COLOR;

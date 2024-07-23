@@ -176,7 +176,7 @@ namespace Scripts
         {
             var correct = GameManager.State.AnswersCorrectness.Last() != CorrectnessType.Wrong;
 
-            if (SongManager.State.IsAnswered)
+            if (correct && SongManager.State.IsAnswered)
                 checkButtonText.text = "Wybierz kolejn¹ kategoriê";
             else if (correct && GameManager.State.AnswersCorrectness.Count > Constants.CATEGORY_NUMBER)
                 checkButtonText.text = "Wygra³eœ! Zakoñcz grê";

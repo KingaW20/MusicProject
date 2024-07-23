@@ -35,6 +35,8 @@ namespace Scripts
     {
         public static string CATEGORIES_FILENAME = "categories";
         public static string SONGS_FILENAME = "songs";
+        public static string SAVINGS_FILENAME = "savings";
+        public static string DATES = "dates";
 
         public const int CATEGORY_NUMBER = 7;
         public const int SONG_NUMBER = 2;
@@ -43,6 +45,8 @@ namespace Scripts
         public const int BLOCK_LINES_NUMBER = 5;
         public const int FIRST_WORD_NUMBER = 3;
         public const int SAVING_SLOTS_NUMBER = 6;
+        public static readonly int[] GUARANTEED_SUM_IDS = { 2, 5 };
+        public static readonly int[] SUMS = { 500, 1000, 2000, 4000, 8000, 15000, 25000, 50000 };
 
         public static Color POSITIVE_COLOR = new Color(0f, 1f, 0f);
         public static Color NEGATIVE_COLOR = new Color(1f, 0f, 0f);
@@ -71,6 +75,7 @@ namespace Scripts
 
         public static void Setup()
         {
+            DataManager.CreateMainFile();
             Rand = new();
             JustChangedToSongContext = false;
             OptionsShown = false;

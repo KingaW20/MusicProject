@@ -22,6 +22,9 @@ public class GameState
 
     //help data
     [SerializeField] public bool[] HelpUsed;
+    [SerializeField] public bool[] HelpJustUsed;
+    [SerializeField] public string ChangeInfoText;
+    [SerializeField] public List<int> ChoosedWordIds;
 
     [SerializeField] public string EnteredAnswer;
 
@@ -35,6 +38,9 @@ public class GameState
         AnswersCorrectness = new();
 
         HelpUsed = new bool[3] { false, false, false };
+        HelpJustUsed = new bool[3] { false, false, false };
+        ChangeInfoText = "";
+        ChoosedWordIds = new();
         EnteredAnswer = "";
     }
 
@@ -52,6 +58,9 @@ public class GameState
         AnswersCorrectness = gs.AnswersCorrectness.ToList();
 
         HelpUsed = gs.HelpUsed.ToArray();
+        HelpJustUsed = gs.HelpJustUsed.ToArray();
+        ChangeInfoText = gs.ChangeInfoText;
+        ChoosedWordIds = gs.ChoosedWordIds.ToList();
         EnteredAnswer = gs.EnteredAnswer;
     }
 }

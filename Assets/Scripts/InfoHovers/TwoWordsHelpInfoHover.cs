@@ -1,3 +1,4 @@
+using System.Linq;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
@@ -20,6 +21,14 @@ namespace Scripts
                 twoWordsHelpInfoBox.SetActive(true);
                 twoWordsHelpInfoBox.GetComponentInChildren<Text>().text = 
                     "Ko³o aktywne przed weryfikacj¹ odpowiedzi\nWska¿e treœæ 2 wybranych przez Ciebie wyrazów odpowiedzi";
+            }
+            else if (GameManager.State.HelpJustUsed[(int)Help.TwoWords] && !GameManager.HelpShown[(int)Help.TwoWords])
+            {
+                twoWordsHelpInfoBox.SetActive(true);
+                twoWordsHelpInfoBox.GetComponentInChildren<Text>().text = "";
+                GameManager.State.ChoosedWordIds.Sort();
+                foreach(var id in GameManager.State.ChoosedWordIds)
+                    twoWordsHelpInfoBox.GetComponentInChildren<Text>().text += $"{id+1}. wyraz: {SongManager.GetWordFromCurrentSongAnswerById(id)}\n";
             }
         }
 

@@ -1,3 +1,4 @@
+using TMPro.Examples;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
@@ -20,6 +21,11 @@ namespace Scripts
                 changeHelpInfoBox.SetActive(true);
                 changeHelpInfoBox.GetComponentInChildren<Text>().text = 
                     "Ko³o aktywne podczas wybierania kategorii\nZamieni wybran¹ przez Ciebie kategoriê\nz inn¹ losowo wybran¹";
+            }
+            else if (GameManager.State.HelpUsed[(int)Help.Change] && !GameManager.HelpShown[(int)Help.Change])
+            {
+                changeHelpInfoBox.SetActive(true);
+                changeHelpInfoBox.GetComponentInChildren<Text>().text = GameManager.State.ChangeInfoText;
             }
         }
 

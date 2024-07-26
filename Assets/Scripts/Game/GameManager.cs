@@ -70,7 +70,6 @@ namespace Scripts
         public static List<string> CategoryNames;
 
         //help data
-        public static int ChoosedHelpWordsNumber;
         public static bool[] HelpShown;
 
         public static void Setup()
@@ -85,7 +84,6 @@ namespace Scripts
             ReadCategories();
             State = new GameState();
 
-            ChoosedHelpWordsNumber = 0;
             HelpShown = new bool[Constants.HELP_NUMBER];
             for (int i = 0; i < Constants.HELP_NUMBER; i++)
                 HelpShown[i] = false;

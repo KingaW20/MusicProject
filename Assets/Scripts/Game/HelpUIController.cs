@@ -19,7 +19,12 @@ namespace Scripts
         [SerializeField] private GameObject[] helpUsedImages = new GameObject[Constants.HELP_NUMBER];
 
         [SerializeField] private Button[] helpWordButtons = new Button[9];
+        [SerializeField] private Button okWordButton;
+
         [SerializeField] private Button[] categoryToChangeButtons = new Button[Constants.CATEGORY_NUMBER];
+        [SerializeField] private Text changeCatInfoText;
+        [SerializeField] private Button okChangeCatButton;
+
         [SerializeField] private Text nextLineText;
 
         void Update()
@@ -39,12 +44,12 @@ namespace Scripts
 
         public void OnChooseWordButtonClick(int wordId)
         {
-            GameManager.ChoosedHelpWordsNumber++;
             helpWordButtons[wordId].interactable = false;
             helpWordButtons[wordId].gameObject.GetComponent<Image>().color = Constants.POSITIVE_COLOR;
             helpWordButtons[wordId].GetComponentInChildren<Text>().text = SongManager.GetWordFromCurrentSongAnswerById(wordId);
+            GameManager.State.ChoosedWordIds.Add(wordId);
 
-            if (GameManager.ChoosedHelpWordsNumber == Constants.HELP_WORDS)
+            if (GameManager.State.ChoosedWordIds.Count() == Constants.HELP_WORDS)
             {
                 foreach (var helpWordButton in helpWordButtons)
                     helpWordButton.interactable = false;
@@ -65,6 +70,9 @@ namespace Scripts
                 cat.interactable = false;
             categoryToChangeButtons[categoryId].gameObject.GetComponent<Image>().color = Constants.POSITIVE_COLOR;
             GameManager.State.HelpUsed[(int)Help.Change] = true;
+            GameManager.State.ChangeInfoText = 
+                $"Kategoriê \"{GameManager.State.SelectedCategories[categoryId].Name}\"\nwymieniono na \"{GameManager.State.CategoryForChange.Name}\"";
+            changeCatInfoText.text = GameManager.State.ChangeInfoText.Replace("\n", "");
             GameManager.State.SelectedCategories[categoryId] = GameManager.State.CategoryForChange;
         }
 
@@ -78,6 +86,7 @@ namespace Scripts
         private void ShowHelp(Help help)
         {
             GameManager.HelpShown[(int)help] = !GameManager.HelpShown[(int)help];
+            if (!GameManager.HelpShown[(int)help]) GameManager.State.HelpJustUsed[(int)help] = true;
             helpBoxes[(int)help].SetActive(GameManager.HelpShown[(int)help]);
         }
 
@@ -85,6 +94,10 @@ namespace Scripts
         {
             for (int i = 0; i < Constants.HELP_NUMBER; i++)
                 helpUsedImages[i].SetActive(GameManager.State.HelpUsed[i] && !helpBoxes[i].activeSelf);
+
+            // if help choosed - make OK button interactable
+            okWordButton.interactable = GameManager.HelpShown[(int)Help.TwoWords] && GameManager.State.ChoosedWordIds.Count() == Constants.HELP_WORDS;
+            okChangeCatButton.interactable = GameManager.HelpShown[(int)Help.Change] && GameManager.State.HelpUsed[(int)Help.Change];
 
             // if any of helps is shown set only button of this help interactable
             if (GameManager.HelpShown.Any(item => item == true))
@@ -95,7 +108,7 @@ namespace Scripts
             }
 
             // make buttons interactable based on context
-            switch(GameManager.State.CurrentGameContext)
+            switch (GameManager.State.CurrentGameContext)
             {
                 case (GameContext.MainContext):
                     helpButtons[(int)Help.TwoWords].interactable = false;

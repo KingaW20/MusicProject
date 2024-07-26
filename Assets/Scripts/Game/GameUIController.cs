@@ -2,6 +2,7 @@ using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
+using System;
 
 namespace Scripts
 {
@@ -31,6 +32,15 @@ namespace Scripts
             foreach (var contextObject in contexts)
                 contextObject.SetActive(false);
             contexts[(int)GameManager.State.CurrentGameContext].SetActive(true);
+
+            if (GameManager.State.CurrentGameContext == GameContext.MainContext)
+            {
+                foreach (Help helpType in Enum.GetValues(typeof(Help)))
+                {
+                    if (helpType != Help.None)
+                        GameManager.State.HelpJustUsed[(int)helpType] = false;
+                }
+            }
 
             OptionsUpdate();
             PointsUpdate();

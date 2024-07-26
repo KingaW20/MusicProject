@@ -21,6 +21,11 @@ namespace Scripts
                 nextLineHelpInfoBox.GetComponentInChildren<Text>().text = 
                     "Ko³o aktywne przed weryfikacj¹ odpowiedzi\nWyœwietli treœæ kolejnej linii tekstu piosenki";
             }
+            else if (GameManager.State.HelpJustUsed[(int)Help.NextLine] && !GameManager.HelpShown[(int)Help.NextLine])
+            {
+                nextLineHelpInfoBox.SetActive(true);
+                nextLineHelpInfoBox.GetComponentInChildren<Text>().text = SongManager.GetCurrentSong().NextLine;
+            }
         }
 
         public void OnPointerDown(PointerEventData pointerEventData)

@@ -18,7 +18,7 @@ namespace Scripts
         [SerializeField] private InputField answer;
 
         [SerializeField] private Button playButton;
-        [SerializeField] private Text speedButtonText;
+        [SerializeField] private Button speedButton;
         [SerializeField] private Image playImage;
         [SerializeField] private Image pauseImage;
         [SerializeField] private AudioSource songSource;
@@ -31,7 +31,6 @@ namespace Scripts
         [SerializeField] private Text rightAnswerText;
 
         [SerializeField] private float speed = 1.2f;
-        private bool faster = false;
 
         void Start()
         {
@@ -72,6 +71,7 @@ namespace Scripts
                         checkButton.interactable = false;
                     else
                         checkButton.interactable = !GameManager.OptionsShown;
+                    speedButton.interactable = false;
                 }
 
                 if (GameManager.JustChangedToSongContext)
@@ -79,8 +79,9 @@ namespace Scripts
                     playButton.interactable = true;
                     songLine.text = "Tekst piosenki";
                     nextSongLine.text = "Tekst piosenki";
-                    faster = false;
-                    speedButtonText.text = "x1";
+                    SongManager.songFaster = false;
+                    speedButton.GetComponentInChildren<Text>().text = "x1";
+                    speedButton.interactable = false;
                 }
 
                 if (GameManager.State.EnteredAnswer != answer.text)
@@ -91,7 +92,11 @@ namespace Scripts
         public void OnPlayAndPauseButtonClick()
         {
             if (songSource.clip == null)
+            {
                 songSource.clip = Resources.Load<AudioClip>(SongManager.State.SongSourcePath);
+                speedButton.interactable = true;
+                songSource.pitch = SongManager.songFaster ? speed : 1f;
+            }
 
             if (!songSource.isPlaying)
             {
@@ -111,9 +116,9 @@ namespace Scripts
 
         public void OnSpeedButtonClick()
         {
-            faster = !faster;
-            songSource.pitch = faster ? speed : 1f;
-            speedButtonText.text = faster ? $"x{speed}" : "x1";
+            SongManager.songFaster = !SongManager.songFaster;
+            songSource.pitch = SongManager.songFaster ? speed : 1f;
+            speedButton.GetComponentInChildren<Text>().text = SongManager.songFaster ? $"x{speed}" : "x1";
         }
 
         public void OnCheckAnswerButtonClick()

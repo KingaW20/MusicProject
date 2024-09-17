@@ -5,10 +5,12 @@ namespace Scripts
     public static class SongManager
     {
         public static SongState State;
+        public static bool songFaster;
 
         public static void Setup()
         {
             State = new SongState();
+            songFaster = false;
         }
 
         public static bool IsAnswerCorrect(string answer)

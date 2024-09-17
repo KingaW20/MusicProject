@@ -11,18 +11,7 @@ public static class DataManager
 
     public static void CreateMainFile()
     {
-        var path = GetMainFilePath();
-        if (!File.Exists(path))
-        {
-            Dictionary<string, List<string>> savingsData = new Dictionary<string, List<string>>
-            {
-                { Constants.SAVINGS_FILENAME, new List<string> { "", "", "", "", "", "" } },
-                { Constants.DATES, new List<string> { "", "", "", "", "", "" } }
-            };
-
-            string json = JsonUtility.ToJson(savingsData);
-            File.WriteAllText(path, json);
-        }
+        var path = GetMainFilePath();        
     }
 
     public static void SaveData(int id, string name)
@@ -70,14 +59,11 @@ public static class DataManager
 
         try
         {
-            var jsonSavings = JsonConvert.DeserializeObject<Dictionary<string, List<string>>>(savingsFile);
-            var savingNames = jsonSavings[Constants.SAVINGS_FILENAME];
-            var dates = jsonSavings[Constants.DATES];
-
+            var jsonSavings = JsonUtility.FromJson<Savings>(savingsFile);
             for (int i = 0; i < Constants.SAVING_SLOTS_NUMBER; i++)
             {
-                if (savingNames[i] != "")
-                    result.Add((i, dates[i], savingNames[i]));
+                if (jsonSavings.Names[i] != "")
+                    result.Add((i, jsonSavings.Dates[i], jsonSavings.Names[i]));
             }
         }
         catch (JsonReaderException ex)
@@ -86,43 +72,19 @@ public static class DataManager
         }
 
         return result;
-
-
-        //var result = new List<(int id, string date, string name)>();
-        //for (int i = 0; i < Constants.SAVING_SLOTS_NUMBER; i++)
-        //{
-        //    string filePath = GetFilePath(i);
-
-        //    if (File.Exists(filePath))
-        //    {
-        //        string jsonString = File.ReadAllText(filePath);
-        //        State state = JsonUtility.FromJson<State>(jsonString);
-        //        result.Add((i, state.Date, state.Name));
-        //    }
-        //}
-        //return result;
     }
 
     private static void UpdateSavings(int id, string name, string date)
     {
         var path = GetMainFilePath();
-        var savingsFile = Resources.Load<TextAsset>(path);
+        var savingsFile = File.ReadAllText(path);
 
         try
         {
-            var jsonSavings = JsonConvert.DeserializeObject<Dictionary<string, List<string>>>(savingsFile.text);
-            var savingNames = jsonSavings[Constants.SAVINGS_FILENAME];
-            var dates = jsonSavings[Constants.DATES];
-
-            savingNames[id] = name;
-            dates[id] = date;
-
-            Dictionary<string, List<string>> savingsData = new Dictionary<string, List<string>>
-            {
-                { Constants.SAVINGS_FILENAME, savingNames },
-                { Constants.DATES, dates }
-            };
-            string json = JsonUtility.ToJson(savingsData);
+            var jsonSavings = JsonUtility.FromJson<Savings>(savingsFile);
+            jsonSavings.Names[id] = name;
+            jsonSavings.Dates[id] = date;
+            string json = JsonUtility.ToJson(jsonSavings);
             File.WriteAllText(path, json);
         }
         catch (JsonReaderException ex)
@@ -133,11 +95,24 @@ public static class DataManager
 
     private static string GetFilePath(int id)
     {
+        if (!Directory.Exists(Path + "/Games"))
+            Directory.CreateDirectory(Path + "/Games");
         return Path + $"/Games/game{id}.json";
     }
 
     private static string GetMainFilePath()
     {
-        return Path + $"/Games/{Constants.SAVINGS_FILENAME}.json";
+        if (!Directory.Exists(Path + "/Games"))
+            Directory.CreateDirectory(Path + "/Games");
+
+        var path = Path + $"/Games/{Constants.SAVINGS_FILENAME}.json";
+        if (!File.Exists(path))
+        {
+            var savings = new Savings();
+            string json = JsonUtility.ToJson(savings);
+            File.WriteAllText(path, json);
+        }
+
+        return path;
     }
 }

@@ -18,6 +18,7 @@ namespace Scripts
         [SerializeField] private InputField answer;
 
         [SerializeField] private Button playButton;
+        [SerializeField] private Text speedButtonText;
         [SerializeField] private Image playImage;
         [SerializeField] private Image pauseImage;
         [SerializeField] private AudioSource songSource;
@@ -28,6 +29,9 @@ namespace Scripts
 
         [SerializeField] private GameObject rightAnswerBox;
         [SerializeField] private Text rightAnswerText;
+
+        [SerializeField] private float speed = 1.2f;
+        private bool faster = false;
 
         void Start()
         {
@@ -75,6 +79,8 @@ namespace Scripts
                     playButton.interactable = true;
                     songLine.text = "Tekst piosenki";
                     nextSongLine.text = "Tekst piosenki";
+                    faster = false;
+                    speedButtonText.text = "x1";
                 }
 
                 if (GameManager.State.EnteredAnswer != answer.text)
@@ -101,6 +107,13 @@ namespace Scripts
 
             playImage.gameObject.SetActive(!songSource.isPlaying);
             pauseImage.gameObject.SetActive(songSource.isPlaying);
+        }
+
+        public void OnSpeedButtonClick()
+        {
+            faster = !faster;
+            songSource.pitch = faster ? speed : 1f;
+            speedButtonText.text = faster ? $"x{speed}" : "x1";
         }
 
         public void OnCheckAnswerButtonClick()

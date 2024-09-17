@@ -96,6 +96,7 @@ namespace Scripts
                 songSource.clip = Resources.Load<AudioClip>(SongManager.State.SongSourcePath);
                 speedButton.interactable = true;
                 songSource.pitch = SongManager.songFaster ? speed : 1f;
+                songSource.time = 0;
             }
 
             if (!songSource.isPlaying)
@@ -112,6 +113,8 @@ namespace Scripts
 
             playImage.gameObject.SetActive(!songSource.isPlaying);
             pauseImage.gameObject.SetActive(songSource.isPlaying);
+
+            Debug.Log("Time: " + songSource.time);
         }
 
         public void OnSpeedButtonClick()
@@ -166,6 +169,11 @@ namespace Scripts
             answer.text = GameManager.State.EnteredAnswer;
 
             GameManager.GameLoadedOnSong = false;
+
+            SongManager.songFaster = false;
+            songSource.pitch = SongManager.songFaster ? speed : 1f;
+            speedButton.GetComponentInChildren<Text>().text = "x1";
+            speedButton.interactable = true;
 
             if (SongManager.State.IsAnswered)
             {

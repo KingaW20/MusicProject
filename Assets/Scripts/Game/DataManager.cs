@@ -43,7 +43,8 @@ public static class DataManager
             if (GameManager.State.CurrentGameContext == GameContext.SongContext)
                 SongManager.GetCurrentSong();
             GameManager.State.CurrentMenuContext = MenuContext.LoadContext;
-            GameManager.GameLoadedOnSong = GameManager.State.CurrentGameContext == GameContext.SongContext;
+            GameManager.
+                GameLoadedOnSong = GameManager.State.CurrentGameContext == GameContext.SongContext;
 
             return true;
         }
